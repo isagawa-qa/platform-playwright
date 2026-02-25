@@ -1,0 +1,17 @@
+[
+  {
+    "role": "standard_user",
+    "username": "standard_user",
+    "password": "secret_sauce"
+  },
+  {
+    "role": "locked_out_user",
+    "username": "locked_out_user",
+    "password": "secret_sauce"
+  },
+  {
+    "role": "problem_user",
+    "username": "problem_user",
+    "password": "secret_sauce"
+  }
+]

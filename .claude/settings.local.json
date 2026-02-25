@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(kernel:*)",
+      "WebSearch"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/hooks/universal-gate-enforcer.py"
+          }
+        ]
+      }
+    ]
+  }
+}

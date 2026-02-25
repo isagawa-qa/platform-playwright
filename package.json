@@ -1,0 +1,27 @@
+{
+  "name": "platform-playwright",
+  "version": "1.0.0",
+  "description": "TypeScript + Playwright QA automation platform with 5-layer architecture",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:ui": "npx playwright test --ui",
+    "test:report": "npx playwright show-report"
+  },
+  "keywords": [
+    "playwright",
+    "typescript",
+    "qa",
+    "automation",
+    "testing"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@faker-js/faker": "^9.0.0",
+    "@playwright/test": "^1.50.0",
+    "@types/node": "^25.3.0",
+    "dotenv": "^16.4.0",
+    "typescript": "^5.7.0",
+    "winston": "^3.17.0"
+  }
+}
