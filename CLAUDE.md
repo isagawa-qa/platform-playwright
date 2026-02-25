@@ -60,9 +60,12 @@ Before generating any layer code, read:
 
 ## Commands
 
+### Kernel Commands
+
 ```
 .claude/commands/kernel/
 ├── session-start.md   ← Check state, resume
+├── domain-setup.md    ← Create protocol + hooks (invokes skill)
 ├── anchor.md          ← Re-read protocol + check work
 ├── learn.md           ← Update protocol + hooks (after fix)
 ├── fix.md             ← Impact assessment before any fix
@@ -70,18 +73,58 @@ Before generating any layer code, read:
 └── reset.md           ← Dev tool: fresh state for testing
 ```
 
+### QA Commands
+
+```
+.claude/commands/
+├── qa-workflow.md          ← Production mode (restricted permissions)
+├── qa-workflow-dev.md      ← Development mode (full access with approval)
+├── qa-on-failure.md        ← HITL failure protocol
+├── qa-pre-construction.md  ← Pre-build verification checkpoint
+├── qa-propose-fix.md       ← Fix approval protocol
+├── qa-reuse-check.md       ← Duplicate module scanner
+├── run-test.md             ← Execute tests with Playwright reporter
+└── pr.md                   ← Code review against architecture rules
+```
+
 ## QA Workflow
 
 ```
 .claude/skills/qa-management-layer/
-├── SKILL.md           ← 5-step workflow overview
-├── references/        ← Step-by-step guides
-│   ├── step-01.md     ← User Input
-│   ├── step-02.md     ← Pre-flight Configuration
-│   ├── step-03.md     ← AI Processing
-│   ├── step-04.md     ← Element Discovery + Construction
-│   └── step-05.md     ← Test Execution + HITL
-└── checkpoints/       ← Layer validation checklists
+├── SKILL.md               ← 5-step workflow overview
+├── workflow.md             ← Step index + data flow
+├── gate-contract.md        ← Validation contract
+├── steps/                  ← Step-by-step guides
+│   ├── step-01.md          ← User Input
+│   ├── step-02.md          ← Pre-flight Configuration
+│   ├── step-03.md          ← AI Processing
+│   ├── step-04.md          ← Element Discovery + Construction
+│   ├── step-04-multipage.md ← Multi-page workflow guide
+│   └── step-05.md          ← Test Execution + HITL
+└── checkpoints/            ← Quality gate checklists
+    ├── layer-validation.md  ← Layer compliance checks
+    ├── on-failure.md        ← HITL failure protocol
+    ├── pre-construction.md  ← Pre-build verification
+    └── propose-fix.md       ← Fix approval protocol
+```
+
+## Domain Setup
+
+```
+.claude/skills/kernel-domain-setup/
+├── SKILL.md               ← 11-step setup overview
+└── references/             ← Step-by-step guides
+    ├── step-01-prerequisites.md
+    ├── step-02-verify-claude-md.md
+    ├── step-03-discover.md
+    ├── step-04-read.md
+    ├── step-05-extract.md
+    ├── step-06-enforcement.md
+    ├── step-07-workflow.md
+    ├── step-08-protocol.md
+    ├── step-09-commands.md
+    ├── step-10-state.md
+    └── step-11-report.md
 ```
 
 ## Principles

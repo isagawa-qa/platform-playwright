@@ -80,11 +80,11 @@ Use when:
 
 | Step | Reference | Description |
 |------|-----------|-------------|
-| 1 | `references/step-01.md` | User Input |
-| 2 | `references/step-02.md` | Pre-flight Configuration |
-| 3 | `references/step-03.md` | AI Processing |
-| 4 | `references/step-04.md` | Element Discovery + Collaborative Construction |
-| 5 | `references/step-05.md` | Test Execution + HITL Iteration |
+| 1 | `steps/step-01.md` | User Input |
+| 2 | `steps/step-02.md` | Pre-flight Configuration |
+| 3 | `steps/step-03.md` | AI Processing |
+| 4 | `steps/step-04.md` | Element Discovery + Collaborative Construction |
+| 5 | `steps/step-05.md` | Test Execution + HITL Iteration |
 
 ---
 

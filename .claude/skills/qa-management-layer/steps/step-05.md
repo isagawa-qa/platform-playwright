@@ -15,6 +15,22 @@
 
 ---
 
+## On-Failure Checkpoint (MANDATORY)
+
+**When ANY test failure occurs, invoke the on-failure checkpoint:**
+
+Read and follow: `.claude/skills/qa-management-layer/checkpoints/on-failure.md`
+
+This ensures:
+- STOP immediately (no autonomous fixes)
+- Report failure to user with structured template
+- Wait for user to choose resolution path
+- If user chooses "AI Proposes Fix", invoke `/qa-propose-fix`
+
+**Do not skip this checkpoint. HITL is mandatory.**
+
+---
+
 ## Skill Instruction
 
 ```
@@ -38,15 +54,7 @@ ACTION:
 
 VALIDATE:
 - If test passed → WORKFLOW COMPLETE
-- If test failed → HITL triage
-
-HITL TRIAGE (on test failure):
-- Present diagnostic data to user
-- Offer triage options:
-  1. Application Defect → Log + Block
-  2. Test Issue → AI fixes + Retry
-  3. Investigate → Show diagnostic data
-  4. Other → User describes action
+- If test failed → invoke on-failure checkpoint (see above)
 
 RETRY POLICY:
 - Max 2 retries per unique error

@@ -57,6 +57,30 @@ When ANY failure occurs during discovery:
 
 ---
 
+## Pre-Construction Checkpoint (MANDATORY)
+
+**Before writing ANY code, invoke the pre-construction checkpoint:**
+
+Read and follow: `.claude/skills/qa-management-layer/checkpoints/pre-construction.md`
+
+This ensures:
+- Reuse check (scan for duplicate modules across workflows)
+- Lessons learned are read and applied
+- Reference files are read (not from memory)
+- BrowserInterface methods are checked
+
+**Do not skip this checkpoint.**
+
+---
+
+## Multi-Page Workflows
+
+If the workflow spans multiple pages (login → inventory → cart → checkout), read the extended guide:
+
+→ `steps/step-04-multipage.md`
+
+---
+
 ## Collaborative Construction
 
 After element discovery, AI builds each layer using Edit/Write tools:
