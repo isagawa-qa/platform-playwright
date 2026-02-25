@@ -1,41 +1,49 @@
 # Step 1: Prerequisites
 
-Before domain setup, install all dependencies. Domain setup itself only indexes the repo, but the QA workflow needs Playwright CLI + browsers ready.
+Verify the toolchain is ready. Dependencies are preinstalled in the repo.
 
-## Action: Run Both Commands
+## Quick Verification
 
-**Run these commands now (not just check — actually run them):**
-
-```bash
-npm install
-```
+Run this to confirm the Playwright CLI is available:
 
 ```bash
-npx playwright install
+npx playwright --version
 ```
 
-The first installs Node packages (`@playwright/test`, `@faker-js/faker`). The second installs Playwright browsers (Chromium, Firefox, WebKit) which are required for `npx playwright codegen` and `npx playwright open` to work.
+If this prints a version number, everything is ready. The Playwright CLI (`codegen`, `open`) ships with `@playwright/test` which is already in `package.json`.
 
-## Why Both Matter
+## Playwright CLI — Element Discovery Tool
 
-| Command | What it does | Required for |
-|---------|-------------|--------------|
-| `npm install` | Installs @playwright/test, @faker-js/faker | Test execution, CLI tools |
-| `npx playwright install` | Downloads browser binaries | `npx playwright codegen`, `npx playwright open`, headed test runs |
+This platform uses the **Playwright CLI** for element discovery during the QA workflow (Step 4):
 
-**If you skip `npx playwright install`, the Playwright CLI will fail when the user runs `/qa-workflow`.**
+```bash
+# Interactive element discovery — opens browser, records selectors
+npx playwright codegen <url>
+
+# Open page for manual inspection
+npx playwright open <url>
+```
+
+These replace MCP-based discovery. No MCP servers are used in this platform.
+
+## Checklist
+
+| Check | Command | Expected |
+|-------|---------|----------|
+| Playwright CLI | `npx playwright --version` | Version number |
+| Node modules | `ls node_modules/@playwright/test` | Directory exists |
 
 ---
 
 ## Report
 
 ```
-PREREQUISITES: Installed
+PREREQUISITES: Verified
 
-- npm install: done
-- npx playwright install: done
+- Playwright CLI available (vX.X.X)
+- Element discovery via: npx playwright codegen <url>
 
 Proceeding to Step 2...
 ```
 
-Continue to Step 2 immediately. No restart needed for domain setup.
+Continue to Step 2 immediately. No restart needed.
