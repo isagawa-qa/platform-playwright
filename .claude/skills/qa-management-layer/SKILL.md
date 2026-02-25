@@ -171,19 +171,13 @@ When AI generates skeleton or incomplete code, it must self-heal:
 
 ---
 
-## Element Discovery (Playwright CLI)
+## Element Discovery (Playwright MCP)
 
-Use Playwright CLI for element discovery:
+Use the Playwright MCP server for element discovery. The MCP provides browser tools that let the agent navigate pages, inspect the accessibility tree, and extract selectors.
 
-```bash
-# Interactive element discovery
-npx playwright codegen <url>
+The Playwright MCP is configured in `.claude/mcp.json` and loads at Claude Code startup.
 
-# Snapshot for accessibility tree
-npx playwright open <url>
-```
-
-AI extracts selectors from the accessibility tree or codegen output.
+AI uses MCP tools to discover elements, then builds locators for Page Objects.
 
 ---
 

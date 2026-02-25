@@ -2,9 +2,14 @@
   "permissions": {
     "allow": [
       "Skill(kernel:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npx @playwright/mcp@latest --help)"
     ]
   },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "playwright"
+  ],
   "hooks": {
     "PreToolUse": [
       {

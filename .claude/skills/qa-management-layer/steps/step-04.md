@@ -15,25 +15,18 @@
 
 ---
 
-## Element Discovery (Playwright CLI)
+## Element Discovery (Playwright MCP)
 
-**Method:** Use Playwright CLI tools for element discovery.
+**Method:** Use the Playwright MCP server for element discovery.
 
-```bash
-# Option 1: Interactive codegen (opens browser, records actions)
-npx playwright codegen https://www.saucedemo.com
-
-# Option 2: Open page for manual inspection
-npx playwright open https://www.saucedemo.com
-```
+The Playwright MCP provides browser tools that let the agent navigate pages, inspect the accessibility tree, and extract selectors. It is configured in `.claude/mcp.json` and loads at Claude Code startup.
 
 **AI Discovery Flow (for each page in workflow):**
 
-1. NAVIGATE to target URL using Playwright
+1. NAVIGATE to target URL using Playwright MCP browser tools
 2. INSPECT page structure via:
-   - `page.locator()` queries
-   - Accessibility tree inspection
-   - DOM inspection via browser DevTools
+   - Accessibility tree snapshot (MCP tool)
+   - Page content inspection
 3. EXTRACT relevant elements:
    - Inputs, buttons, links, selects, textareas
    - Confirmation/error messages (output elements)
