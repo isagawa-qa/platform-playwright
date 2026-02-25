@@ -173,7 +173,7 @@ When AI generates skeleton or incomplete code, it must self-heal:
 
 ## Element Discovery (Playwright CLI)
 
-Instead of MCP tools, use Playwright CLI for element discovery:
+Use Playwright CLI for element discovery:
 
 ```bash
 # Interactive element discovery

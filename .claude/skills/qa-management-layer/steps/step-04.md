@@ -17,7 +17,7 @@
 
 ## Element Discovery (Playwright CLI)
 
-**Method:** Use Playwright CLI tools for element discovery (NOT MCP tools).
+**Method:** Use Playwright CLI tools for element discovery.
 
 ```bash
 # Option 1: Interactive codegen (opens browser, records actions)
