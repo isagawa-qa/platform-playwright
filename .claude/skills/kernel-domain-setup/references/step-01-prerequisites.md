@@ -1,18 +1,15 @@
 # Step 1: Prerequisites
 
-Verify the toolchain is ready. Dependencies are preinstalled in the repo.
+Before domain setup, verify all dependencies are installed and configured.
 
-## Quick Verification
+## Node Dependencies
 
-Run this to confirm the Playwright CLI is available:
+Check `node_modules/` exists and has required packages:
 
-```bash
-npx playwright --version
-```
+- `@playwright/test` — Test runner + Playwright CLI
+- `@faker-js/faker` — Test data generation
 
-If this prints a version number, everything is ready. The Playwright CLI (`codegen`, `open`) ships with `@playwright/test` which is already in `package.json`.
-
-## Playwright CLI — Element Discovery Tool
+## Playwright CLI (Element Discovery)
 
 This platform uses the **Playwright CLI** for element discovery during the QA workflow (Step 4):
 
@@ -24,24 +21,38 @@ npx playwright codegen <url>
 npx playwright open <url>
 ```
 
-These replace MCP-based discovery. No MCP servers are used in this platform.
+The Playwright CLI ships with `@playwright/test`. Verify it's available:
+
+```bash
+npx playwright --version
+```
+
+## Playwright Browsers
+
+Verify browsers are installed (needed for `codegen`, `open`, and headed test runs):
+
+```bash
+npx playwright install --dry-run
+```
 
 ## Checklist
 
-| Check | Command | Expected |
-|-------|---------|----------|
-| Playwright CLI | `npx playwright --version` | Version number |
-| Node modules | `ls node_modules/@playwright/test` | Directory exists |
+| Dependency | Check | Action if Missing |
+|------------|-------|-------------------|
+| Node deps | `node_modules/@playwright/test` exists | `npm install` |
+| Playwright CLI | `npx playwright --version` prints version | Comes with @playwright/test |
+| Browsers | `npx playwright install --dry-run` shows installed | `npx playwright install` |
 
 ---
 
-## Report
+## All Configured
 
 ```
-PREREQUISITES: Verified
+PREREQUISITES: All configured
 
-- Playwright CLI available (vX.X.X)
-- Element discovery via: npx playwright codegen <url>
+- Node dependencies installed
+- Playwright CLI available
+- Browsers installed
 
 Proceeding to Step 2...
 ```
