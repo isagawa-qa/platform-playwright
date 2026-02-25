@@ -1,45 +1,39 @@
 # Step 1: Prerequisites
 
-Before domain setup, verify core dependencies are installed.
+Before domain setup, install all dependencies. Domain setup itself only indexes the repo, but the QA workflow needs Playwright CLI + browsers ready.
 
-**Domain setup indexes the repo and builds a protocol. It does NOT require browser access.**
+## Action: Run Both Commands
 
-## Node Dependencies
-
-Check `package.json` exists and install:
+**Run these commands now (not just check — actually run them):**
 
 ```bash
 npm install
 ```
 
-### Required packages:
-- @playwright/test
-- @faker-js/faker
-
-## Playwright Browsers
-
-Verify Playwright browsers are installed:
-
 ```bash
 npx playwright install
 ```
 
-## Checklist
+The first installs Node packages (`@playwright/test`, `@faker-js/faker`). The second installs Playwright browsers (Chromium, Firefox, WebKit) which are required for `npx playwright codegen` and `npx playwright open` to work.
 
-| Dependency | Check | Action if Missing |
-|------------|-------|-------------------|
-| Node deps | `package.json` has @playwright/test | `npm install` |
-| Browsers | Playwright browsers installed | `npx playwright install` |
+## Why Both Matter
+
+| Command | What it does | Required for |
+|---------|-------------|--------------|
+| `npm install` | Installs @playwright/test, @faker-js/faker | Test execution, CLI tools |
+| `npx playwright install` | Downloads browser binaries | `npx playwright codegen`, `npx playwright open`, headed test runs |
+
+**If you skip `npx playwright install`, the Playwright CLI will fail when the user runs `/qa-workflow`.**
 
 ---
 
 ## Report
 
 ```
-PREREQUISITES: Verified
+PREREQUISITES: Installed
 
-- Node dependencies installed
-- Playwright browsers available
+- npm install: done
+- npx playwright install: done
 
 Proceeding to Step 2...
 ```
