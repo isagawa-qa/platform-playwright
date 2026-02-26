@@ -13,13 +13,14 @@ The hook exists for a reason. Follow it. Every time. No exceptions.
 
 ## CRITICAL: First Action Rule
 
-When user gives any task or says "continue":
+When user gives ANY input (task, "continue", "domain setup", anything):
 1. **IMMEDIATELY** invoke `/kernel/session-start`
 2. Do NOT read files first
 3. Do NOT explore the codebase first
 4. Do NOT run any commands first
+5. After session-start completes, it auto-proceeds (no asking)
 
-**First action = /kernel/session-start. Always.**
+**First action = /kernel/session-start. Always. No exceptions.**
 
 ## The Loop
 

@@ -65,16 +65,27 @@ Check state and resume if needed. Always invoke first.
    }
    ```
 
-7. **Report:**
+7. **Report and PROCEED (no asking):**
    ```
    Session started.
    - State: [fresh | resumed from X]
    - Domain: [none | domain name]
    - Prior context: [summary of context key, or "none"]
-   - Next: [what to do next]
+   - Next: [what happens next]
 
    Proceeding.
    ```
+
+8. **Auto-proceed (MANDATORY — do NOT ask the user):**
+
+   After reporting, IMMEDIATELY proceed to the next step:
+
+   - **No domain exists** → Invoke `/kernel/domain-setup` NOW
+   - **Domain exists** → Invoke `/kernel/anchor` NOW
+   - **Resuming from restart** → Follow resume instructions (step 2)
+
+   **NEVER ask "Would you like me to..." or "Should I...".**
+   The kernel is autonomous. Report what you're doing, then do it.
 
 ## Resume Step Support
 
