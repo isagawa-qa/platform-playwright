@@ -122,7 +122,7 @@ try {
 | POM | `this` | Locators, atomic methods (return this), state-check methods |
 | Task | `void` | Workflow orchestration, @autologger decorator |
 | Role | `void` | Multi-task workflows, @autologger decorator |
-| Test | N/A | ONE role call, assertions via POM state methods |
+| Test | N/A | Role workflow calls (no test-level orchestration), assertions via POM state methods |
 
 ---
 

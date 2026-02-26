@@ -128,7 +128,7 @@ After element discovery, AI builds each layer using Edit/Write tools:
 | **POM** | Static locators, atomic methods return `this`, state-check methods |
 | **Task** | `@autologger('Task')`, POM composition, void return, no locators |
 | **Role** | `@autologger('Role')`, Task composition, void return, no locators |
-| **Test** | `test()`, `expect()`, ONE Role call, POM assertions |
+| **Test** | `test()`, `expect()`, Role workflow calls (no test-level orchestration), POM assertions |
 
 ### Reference Files (AI MUST read before generating)
 
@@ -228,7 +228,7 @@ test.describe('Standard User Login', () => {
     const user = new StandardUserRole(browser_interface);
     const loginPage = new LoginPage(browser_interface);
 
-    // Act - ONE workflow call
+    // Act - Role workflow call(s)
     await user.loginAndBrowse('standard_user', 'secret_sauce');
 
     // Assert - Via POM state-check methods

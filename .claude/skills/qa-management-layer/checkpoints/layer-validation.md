@@ -33,7 +33,7 @@
 - [ ] Uses `test()` and `expect()` from fixtures
 - [ ] Uses `browser_interface` fixture
 - [ ] AAA pattern: Arrange / Act / Assert
-- [ ] ONE Role workflow call per test (Act section)
+- [ ] Role workflow calls — no test-level orchestration (Act section)
 - [ ] Asserts via POM state-check methods
 - [ ] No direct POM action calls
 - [ ] No Task calls (only Role calls)

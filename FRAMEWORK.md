@@ -12,9 +12,9 @@
 │ TEST                                                                 │
 │ - Playwright test() with test.describe()                             │
 │ - Load data from JSON or @faker-js/faker                             │
-│ - Call ONE workflow method per Role                                  │
+│ - Call Role workflow methods (chain when workflow requires it)        │
 │ - Assert via Page Object state-check methods directly                │
-│ - NO orchestration (don't call multiple Role/Task methods)           │
+│ - NO test-level orchestration (belongs in Role layer)                │
 └─────────────────────────────────────────────────────────────────────┘
                               │ uses
                               ▼
