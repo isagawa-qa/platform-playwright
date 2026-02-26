@@ -44,7 +44,7 @@ And I complete CHECKOUT PAGE           → CheckoutPage
 3. Build Role (compose Tasks)
    → framework/roles/{workflow}/{role-name}-role.ts
 
-4. Build Test (one Role call, assert via POMs)
+4. Build Test (Role workflow calls, assert via POMs)
    → tests/{workflow}/test-{name}.spec.ts
 ```
 
@@ -141,7 +141,7 @@ framework/roles/{workflow}/
   └── {role-name}-role.ts     ← composes Tasks
 
 tests/{workflow}/
-  └── test-{name}.spec.ts    ← ONE Role call, asserts via POMs
+  └── test-{name}.spec.ts    ← Role workflow calls, asserts via POMs
 ```
 
 ---

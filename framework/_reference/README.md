@@ -57,9 +57,9 @@
 ### Test
 ```typescript
 // Playwright test.describe / test()
-// Call ONE Role workflow method per test
+// Call Role workflow methods (chain when workflow requires it)
 // Assert via Page Object state-check methods
-// NO orchestration (Role handles workflow)
+// NO test-level orchestration (belongs in Role layer)
 ```
 
 ---
@@ -72,7 +72,7 @@
 | NO return values from Tasks/Roles | Task, Role |
 | Return `this` from POM atomic methods | POM |
 | Assert via POM state-check methods | Test |
-| ONE Role workflow call per test | Test |
+| Role workflow calls (no test-level orchestration) | Test |
 | `@autologger` on Task/Role methods | Task, Role |
 
 ---
