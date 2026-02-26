@@ -63,7 +63,7 @@ Exclude `framework/_reference/` (those are canonical patterns, not review target
 - [x] Follows AAA pattern (Arrange / Act / Assert)
 - [ ] VIOLATION: Contains locator strings or selectors
 - [ ] VIOLATION: Imports from tasks/ directly (Tests use Roles, not Tasks)
-- [ ] VIOLATION: Calls multiple Role methods (should call ONE workflow method)
+- [ ] VIOLATION: Test does orchestration that belongs in Role layer (chaining multiple Role methods is OK when workflow requires it — e.g., capturing intermediate state between steps)
 - [ ] VIOLATION: Calls POM action methods (Tests only use POM state-check methods for assertions)
 
 ### 3. Senior SDET Quality Checks
