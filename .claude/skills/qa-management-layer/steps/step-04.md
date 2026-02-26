@@ -19,13 +19,45 @@
 
 **Method:** Use the Playwright MCP server for element discovery.
 
-The Playwright MCP provides browser tools that let the agent navigate pages, inspect the accessibility tree, and extract selectors. It is configured in `.claude/mcp.json` and loads at Claude Code startup.
+The Playwright MCP provides browser tools that let the agent navigate pages, inspect the accessibility tree, and extract selectors. It is configured in `.mcp.json` (project root) and loads at Claude Code startup.
 
-**AI Discovery Flow (for each page in workflow):**
+### MANDATORY: Verify MCP Tools Are Available
+
+**Before attempting ANY element discovery, verify that Playwright MCP tools are loaded in this session.**
+
+Check for MCP tools with names like `mcp__playwright__*` (e.g., `browser_navigate`, `browser_snapshot`, `browser_click`). These are the tools you use for discovery.
+
+**If MCP tools are NOT available:**
+
+```
+BLOCKED: Playwright MCP tools not available
+
+The Playwright MCP server did not load in this session.
+Element discovery requires MCP browser tools to inspect pages.
+
+Possible causes:
+1. Claude Code was not restarted after MCP was configured
+2. .mcp.json (project root) is missing or misconfigured
+3. .claude/settings.local.json is missing enableAllProjectMcpServers
+
+FIX:
+1. Check .mcp.json (project root) has playwright server config
+2. Check .claude/settings.local.json has enableAllProjectMcpServers: true
+3. Restart Claude Code
+4. Re-run /qa-workflow
+```
+
+**STOP. Do NOT fall back to WebFetch. Do NOT guess selectors. Do NOT proceed without MCP.**
+
+The entire point of element discovery is to inspect the LIVE page via MCP. Guessing selectors defeats the purpose and produces broken tests.
+
+---
+
+### AI Discovery Flow (for each page in workflow)
 
 1. NAVIGATE to target URL using Playwright MCP browser tools
 2. INSPECT page structure via:
-   - Accessibility tree snapshot (MCP tool)
+   - Accessibility tree snapshot (MCP `browser_snapshot` tool)
    - Page content inspection
 3. EXTRACT relevant elements:
    - Inputs, buttons, links, selects, textareas
@@ -47,6 +79,8 @@ When ANY failure occurs during discovery:
 1. **STOP** - Do not attempt autonomous fixes
 2. **REPORT** - Show user exactly what failed
 3. **WAIT** - Get human decision before proceeding
+
+**This includes MCP tools not being available. Never work around missing MCP.**
 
 ---
 

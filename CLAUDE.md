@@ -69,8 +69,7 @@ Before generating any layer code, read:
 ├── anchor.md          ← Re-read protocol + check work
 ├── learn.md           ← Update protocol + hooks (after fix)
 ├── fix.md             ← Impact assessment before any fix
-├── complete.md        ← Final gate (before done)
-└── reset.md           ← Dev tool: fresh state for testing
+└── complete.md        ← Final gate (before done)
 ```
 
 ### QA Commands

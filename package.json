@@ -23,5 +23,8 @@
     "dotenv": "^16.4.0",
     "typescript": "^5.7.0",
     "winston": "^3.17.0"
+  },
+  "dependencies": {
+    "@playwright/mcp": "^0.0.68"
   }
 }

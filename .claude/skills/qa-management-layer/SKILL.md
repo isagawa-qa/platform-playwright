@@ -52,7 +52,7 @@ Use when:
       ▼
   Step 4: Collaborative Construction
       │
-      ├─► Playwright CLI element discovery (npx playwright codegen)
+      ├─► Playwright MCP element discovery (accessibility tree + selectors)
       │
       ├─► AI builds POMs manually (Edit/Write tools)
       ├─► AI builds Tasks manually (Edit/Write tools)
@@ -175,7 +175,7 @@ When AI generates skeleton or incomplete code, it must self-heal:
 
 Use the Playwright MCP server for element discovery. The MCP provides browser tools that let the agent navigate pages, inspect the accessibility tree, and extract selectors.
 
-The Playwright MCP is configured in `.claude/mcp.json` and loads at Claude Code startup.
+The Playwright MCP is configured in `.mcp.json` (project root) and loads at Claude Code startup.
 
 AI uses MCP tools to discover elements, then builds locators for Page Objects.
 
