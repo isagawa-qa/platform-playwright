@@ -1,4 +1,4 @@
-# Step 6: Understand Enforcement
+# Step 5: Understand Enforcement
 
 The kernel uses two enforcement layers:
 
@@ -13,7 +13,7 @@ The universal hook (`.claude/hooks/universal-gate-enforcer.py`) enforces:
 | Anchor | `anchored = true` | `/kernel/anchor` |
 | Actions | `actions_since_anchor <= limit` | `/kernel/anchor` |
 
-This is automatic. No domain-specific configuration needed.
+The hook code is universal but **must be registered** in `.claude/settings.local.json` to fire. See step-10 for the registration template. An unregistered hook is dead code.
 
 ## Layer 2: Agent Self-Enforcement (via protocol)
 
@@ -31,9 +31,9 @@ When agent anchors:
 
 ## What this means for domain-setup
 
-Rules must be documented clearly in reference files (not protocol) so agent can self-enforce. Verify `framework/_reference/` contains:
-- Architecture examples per layer
+Rules must be documented clearly in reference files (not protocol) so agent can self-enforce. Verify reference documentation contains:
+- Architecture diagram
 - Patterns with code examples
-- Anti-patterns with clear examples
+- Anti-patterns with examples
 
 The protocol INDEXES these files. Agent reads actual files during anchor.

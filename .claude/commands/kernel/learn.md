@@ -27,21 +27,21 @@ Update protocol AND hooks after fixing any failure. Make the same mistake imposs
    If the lesson reveals a pattern worth codifying:
 
    a. **Read the protocol index** (`.claude/protocols/[domain]-protocol.md`) to discover what reference files exist
-   b. **Check for domain pack** — look for `.claude/skills/*-domain-pack/` or domain pack references in the protocol index
+   b. **Check for domain spec** — look for `.claude/skills/` domain spec folders or domain spec references in the protocol index
    c. **Follow the appropriate path:**
 
-   **Domain pack present** — the pack defines the reference structure. Follow it:
-   - Match the lesson to the pack's reference files (anti-patterns, quality gates, etc.)
-   - Write directly — domain pack mappings are pre-approved by the pack author
-   - Stay consistent with the pack's existing format and conventions
+   **Domain spec present** — the spec defines the reference structure. Follow it:
+   - Match the lesson to the spec's reference files (anti-patterns, quality gates, etc.)
+   - Write directly — domain spec mappings are pre-approved by the spec author
+   - Stay consistent with the spec's existing format and conventions
 
-   **No domain pack** — generic/vanilla kernel. Discover dynamically:
+   **No domain spec** — generic/vanilla kernel. Discover dynamically:
    - Determine which reference file the lesson applies to (if any)
    - Propose the update to the user — state which file, what you'd add, and why
    - Only write after user approves
    - If no existing reference file fits, propose a new one
 
-   The human is the source of truth. Domain packs encode pre-approved human expertise.
+   The human is the source of truth. Domain specs encode pre-approved human expertise.
 
 4. **Update hooks if enforceable:**
 

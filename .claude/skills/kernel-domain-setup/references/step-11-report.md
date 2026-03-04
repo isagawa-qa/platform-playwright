@@ -1,22 +1,21 @@
-# Step 11: Report & Restart
+# Step 10: Report & Restart
 
 ## Report Format
 
 ```
-DOMAIN SETUP COMPLETE: qa
+DOMAIN SETUP COMPLETE: [domain]
 
 Indexed:
 ├── Reference code: [X] files
-├── Infrastructure: [X] files
+├── Configuration: [X] files
 ├── Workflow: [X] skill steps
-├── Test setup: [X] files
 └── Entry points: [X] commands
 
 Wrapped Commands: [X] commands now run within kernel loop
 
-Protocol: .claude/protocols/qa-protocol.md
+Protocol: .claude/protocols/[domain]-protocol.md
 
-RESTART REQUIRED
+⚠️  RESTART REQUIRED
 
 Restart Claude Code, then say "continue".
 ```

@@ -1,22 +1,22 @@
 # Kernel Domain Setup
 
-Set up QA Test Automation domain enforcement by discovering and indexing repo content.
+Set up domain-specific enforcement by discovering and indexing repo content.
 
 ## Overview
 
-This skill guides the agent through setting up domain-specific enforcement for the QA test automation framework. It creates an indexed protocol, wraps commands for kernel loop enforcement, and establishes the self-improvement infrastructure.
+This skill guides the agent through setting up domain-specific enforcement. It creates an indexed protocol, wraps commands for kernel loop enforcement, and establishes the self-improvement infrastructure.
 
 ## Steps
 
 | Step | Action | Reference |
 |------|--------|-----------|
 | 1 | Verify prerequisites | → `references/step-01-prerequisites.md` |
-| 2 | Verify CLAUDE.md | → `references/step-02-verify-claude-md.md` |
-| 3 | Discover repo structure | → `references/step-03-discover.md` |
-| 4 | Read reference code | → `references/step-04-read.md` |
-| 5 | Extract patterns | → `references/step-05-extract.md` |
-| 6 | Understand enforcement | → `references/step-06-enforcement.md` |
-| 7 | Read workflow | → `references/step-07-workflow.md` |
+| 2 | Discover repo structure | → `references/step-02-discover.md` |
+| 3 | Read reference code | → `references/step-03-read.md` |
+| 4 | Extract patterns | → `references/step-04-extract.md` |
+| 5 | Understand enforcement | → `references/step-05-enforcement.md` |
+| 6 | Read workflow | → `references/step-06-workflow.md` |
+| 7 | Build roadmap | → `references/step-07-roadmap.md` |
 | 8 | Build protocol | → `references/step-08-protocol.md` |
 | 9 | Wrap commands | → `references/step-09-commands.md` |
 | 10 | Update state | → `references/step-10-state.md` |
@@ -35,15 +35,15 @@ This skill guides the agent through setting up domain-specific enforcement for t
 
 ## Key Principles
 
-- **Protocol = Index** — Point to files, don't duplicate content
-- **200-line threshold** — Split files when they exceed this
-- **Dynamic categories** — Create new folders for emerging content
-- **Self-improvement** — Lessons learned accumulate via `/kernel/learn`
+- **Protocol = Index** - Point to files, don't duplicate content
+- **200-line threshold** - Split files when they exceed this
+- **Dynamic categories** - Create new folders for emerging content
+- **Self-improvement** - Lessons learned accumulate via `/kernel/learn`
 
 ## Outcome
 
 After completion:
-- Protocol created at `.claude/protocols/qa-protocol.md`
+- Protocol created at `.claude/protocols/[domain]-protocol.md`
 - Lessons folder at `.claude/lessons/`
 - Commands wrapped for kernel loop enforcement
 - State files updated
