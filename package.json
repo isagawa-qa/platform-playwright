@@ -1,6 +1,6 @@
 {
   "name": "platform-playwright",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "TypeScript + Playwright QA automation platform with 5-layer architecture",
   "scripts": {
     "test": "npx playwright test",
