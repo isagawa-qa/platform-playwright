@@ -1,20 +1,19 @@
-# Step 7: Read Workflow
+# Step 6: Read Workflow
 
 Read workflow skill files to understand command execution:
 
 | File | Extract |
 |------|---------|
-| `.claude/skills/qa-management-layer/SKILL.md` | Workflow entry point, philosophy |
-| `.claude/skills/qa-management-layer/workflow.md` | 5-step index, data flow |
-| `.claude/skills/qa-management-layer/gate-contract.md` | Validation contract (validate, teach, learn) |
-| `.claude/skills/qa-management-layer/steps/*.md` | Step-specific criteria |
+| `.claude/skills/[domain]-*/SKILL.md` | Workflow entry point, philosophy |
+| `.claude/skills/[domain]-*/workflow.md` | Step index, data flow |
+| `.claude/skills/[domain]-*/steps/*.md` | Step-specific criteria |
 
 ## Identify
 
-- Workflow steps (5 steps for qa-management-layer)
+- Workflow steps (if defined)
 - Validation criteria per step
 - HITL checkpoints
-- Entry point commands (`/qa-workflow`, `/qa-workflow-dev`)
+- Entry point commands
 
 ## Understand the Learning Cycle
 

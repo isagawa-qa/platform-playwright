@@ -6,44 +6,19 @@ Check state and resume if needed. Always invoke first.
 
 1. **Check for existing state:**
    - Read `.claude/state/session_state.json` if exists
-   - If `context` key exists, read and internalize it — this is prior conversation context
-   - Report context summary so continuity is established
-   - If `needs_restart` is true, handle restart resume (see Step 2)
+   - If `needs_restart` is true, resume from `resume_after_restart`
 
-2. **Handle restart resume:**
-
-   If `needs_restart` is true:
-
-   a. Clear the restart flag:
-   ```json
-   {
-     "needs_restart": false
-   }
-   ```
-
-   b. Check `resume_step` for skill-based resume:
-   - If `resume_step` is set (e.g., `2`), resume `/kernel/domain-setup` at that step
-   - Read the skill SKILL.md and continue from indicated step
-
-   c. Otherwise check `resume_after_restart`:
-   - If set to "anchor" or "/kernel/anchor", invoke `/kernel/anchor`
-   - If set to other command, invoke that command
-
-3. **Check for domain state:**
+2. **Check for domain state:**
    - Look for `.claude/state/[domain]_workflow.json`
    - If exists, summarize current progress
 
-4. **Domain persistence rule (CRITICAL):**
+3. **Domain persistence rule (CRITICAL):**
    - **If domain exists → USE IT** (never create new)
    - One project = one domain = one protocol
    - New capabilities (API, UI, etc.) extend existing protocol via `/kernel/learn`
    - Only invoke `/kernel/domain-setup` if NO domain exists at all
 
-5. **Update session state (MERGE, don't overwrite):**
-
-   CRITICAL: Merge these fields into existing state. Do NOT overwrite the entire file.
-   Preserve existing keys, especially `context`.
-
+4. **Update session state:**
    ```json
    {
      "session_started": true,
@@ -52,7 +27,7 @@ Check state and resume if needed. Always invoke first.
    }
    ```
 
-6. **Force anchor on fresh start:**
+5. **Force anchor on fresh start:**
 
    If NOT resuming from restart (i.e., `needs_restart` was false or missing):
    - Set `anchored: false` in domain_workflow.json (if domain exists)
@@ -65,41 +40,26 @@ Check state and resume if needed. Always invoke first.
    }
    ```
 
-7. **Report and PROCEED (no asking):**
+6. **Report and PROCEED (no asking):**
    ```
    Session started.
    - State: [fresh | resumed from X]
    - Domain: [none | domain name]
-   - Prior context: [summary of context key, or "none"]
    - Next: [what happens next]
 
    Proceeding.
    ```
 
-8. **Auto-proceed (MANDATORY — do NOT ask the user):**
+7. **Auto-proceed (MANDATORY — do NOT ask the user):**
 
    After reporting, IMMEDIATELY proceed to the next step:
 
    - **No domain exists** → Invoke `/kernel/domain-setup` NOW
    - **Domain exists** → Invoke `/kernel/anchor` NOW
-   - **Resuming from restart** → Follow resume instructions (step 2)
+   - **Resuming from restart** → Follow resume instructions (step 1)
 
    **NEVER ask "Would you like me to..." or "Should I...".**
    The kernel is autonomous. Report what you're doing, then do it.
-
-## Resume Step Support
-
-For skill-based commands like `/kernel/domain-setup`:
-
-| State Field | Purpose |
-|-------------|---------|
-| `resume_step` | Step number to resume from (e.g., `2`) |
-| `resume_after_restart` | Command to invoke (e.g., `"/kernel/anchor"`) |
-
-When `resume_step` is set:
-1. Invoke the relevant skill command
-2. Skip to the indicated step
-3. Continue from there
 
 ## State File Location
 

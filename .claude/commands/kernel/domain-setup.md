@@ -4,7 +4,7 @@ Create complete enforcement for a new domain. Invoke when starting work in a new
 
 ## Instructions
 
-This command uses a skill-based approach with 10 modular steps.
+This command uses a skill-based approach with 11 modular steps.
 
 ### Load Skill
 
@@ -22,14 +22,15 @@ If resuming after restart (check `resume_step` in session_state.json):
 |------|--------|
 | 1 | Verify prerequisites |
 | 2 | Discover repo structure |
-| 3 | Analyze existing code |
+| 3 | Read reference code |
 | 4 | Extract patterns |
 | 5 | Understand enforcement |
-| 6 | Build protocol |
-| 7 | Create domain hook |
-| 8 | Wrap commands |
-| 9 | Update settings |
-| 10 | Report & restart |
+| 6 | Read workflow |
+| 7 | Build roadmap |
+| 8 | Build protocol |
+| 9 | Wrap commands |
+| 10 | Update state |
+| 11 | Report & restart |
 
 ### Key Principles
 
@@ -45,4 +46,4 @@ Domain name MUST be normalized:
 - Replace hyphens with underscores
 - Remove special characters
 
-Example: `playwright-automation` → `playwright_automation`
+Example: `my-project` → `my_project`

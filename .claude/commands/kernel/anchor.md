@@ -20,24 +20,35 @@ Re-center on protocol. Invoke at session start, every 10 actions, or when contex
    - Quality gates
    - Anti-patterns to avoid
 
-3. **Read Lessons Learned (USE READ TOOL):**
+3. **Read Lessons Cheat Sheet (USE READ TOOL):**
    - Open `.claude/lessons/lessons.md`
    - Read entire file — use the Read tool, not memory
-   - Note any recent additions
-   - These are mistakes to avoid
+   - This is a cheat sheet of actionable directives, not descriptions
 
-4. **Restore conversation context (USE READ TOOL):**
+4. **Cite rules for current task (MANDATORY):**
+   - After reading the cheat sheet, list 3-5 specific rules that apply to your current task
+   - Format: `rule from cheat sheet` → `how it applies to this task`
+   - You MUST cite actual rules from the cheat sheet — not paraphrases, not generalities
+   - This appears in the anchor confirmation output under "Rules for this task"
+   - If you cannot cite specific rules, you did not read the cheat sheet
+
+5. **Restore conversation context (USE READ TOOL):**
    - Read `.claude/state/session_state.json`
    - If `context` key exists, internalize prior decisions, direction changes, and task thread
    - This recovers context that may have been lost to context window compression
 
-### Part B: Check Recent Work (if any)
+### Part B: Review All Inter-Anchor Work
 
-5. **Review recent work:**
-   - What files were created/modified since last anchor?
-   - If none, skip to Step 8
+**CRITICAL: If `actions_since_anchor > 0` in workflow state, there IS work to review. NEVER claim "no new work" when the counter is non-zero.**
 
-6. **Check against protocol:**
+6. **Read the actions log:**
+   - Read `actions_log` array from `session_state.json`
+   - This is the itemized ledger of every action since the last anchor
+   - Every Edit, Write, Bash, Task, and Read that modified state IS work
+   - Cross-repo actions ARE work
+   - State file updates ARE work
+
+7. **Review each action against protocol:**
 
    | Check | Status |
    |-------|--------|
@@ -46,16 +57,23 @@ Re-center on protocol. Invoke at session start, every 10 actions, or when contex
    | Anti-patterns avoided? | ✓/✗ |
    | Quality gates passed? | ✓/✗ |
 
-7. **If violation found:**
+8. **If violation found:**
    - STOP
    - Set `needs_learn: true, needs_learn_reason: "anchor_violation"` in session_state.json
    - Fix the violation
    - Invoke `/kernel/learn` to record lesson (this clears the block)
    - Then continue
 
-### Part C: Reset and Proceed
+9. **Learn self-enforcement check:**
+   - If test failures occurred since last anchor (check actions_log for failed Bash test commands)
+     but no lesson was recorded (no `/kernel/learn` invocation in actions_log):
+   - Set `needs_learn: true, needs_learn_reason: "test_failure"` in session_state.json
+   - Invoke `/kernel/learn` before proceeding
+   - This catches cases where the hook didn't fire (e.g., not yet restarted after setup)
 
-8. **Save conversation context:**
+### Part C: Save State and Proceed
+
+10. **Save conversation context:**
    - Update `context` key in `.claude/state/session_state.json` with:
      - Key decisions made since last anchor
      - Direction changes or pivots
@@ -64,48 +82,70 @@ Re-center on protocol. Invoke at session start, every 10 actions, or when contex
    - Keep concise — key/value pairs, not narrative
    - MERGE into existing state, don't overwrite other keys
 
-9. **State current task:**
-   - What are you about to do?
-   - How does it fit the protocol?
+11. **Clear and reset actions log:**
+    - Clear the `actions_log` array in `session_state.json` (set to `[]`)
+    - The log resets each anchor — new actions get appended as they happen
 
-10. **Update state:**
+12. **State current task:**
+    - What are you about to do?
+    - How does it fit the protocol?
 
-   Update `.claude/state/[domain]_workflow.json`:
-   ```json
-   {
-     "anchored": true,
-     "anchor_timestamp": "...",
-     "actions_since_anchor": 0
-   }
-   ```
+13. **Update state:**
 
-   If resuming from restart, also update `.claude/state/session_state.json`:
-   ```json
-   {
-     "needs_restart": false,
-     "resume_after_restart": null
-   }
-   ```
+    Update `.claude/state/[domain]_workflow.json`:
+    ```json
+    {
+      "anchored": true,
+      "anchor_timestamp": "...",
+      "actions_since_anchor": 0
+    }
+    ```
 
-11. **Confirm:**
-   ```
-   ANCHORED: [domain]
+    If resuming from restart, also update `.claude/state/session_state.json`:
+    ```json
+    {
+      "needs_restart": false,
+      "resume_after_restart": null
+    }
+    ```
 
-   Key patterns:
-   - [pattern 1]
-   - [pattern 2]
+14. **Confirm:**
+    ```
+    ANCHORED: [domain]
 
-   Lessons to remember:
-   - [lesson 1]
-   - [lesson 2]
+    Key patterns:
+    - [pattern 1]
+    - [pattern 2]
 
-   Files checked: N (0 if fresh session)
-   Violations: 0 | N
+    Rules for this task:
+    - [cheat sheet rule] → [how it applies]
+    - [cheat sheet rule] → [how it applies]
+    - [cheat sheet rule] → [how it applies]
 
-   Current task: [what you're doing]
+    Actions reviewed: N
+    Violations: 0 | N
 
-   Proceeding with protocol.
-   ```
+    Current task: [what you're doing]
+
+    Proceeding with protocol.
+    ```
+
+## Actions Log
+
+Between anchors, append every action to `actions_log` in `session_state.json`:
+
+```json
+{
+  "actions_log": [
+    "Edit: filename.md — what changed",
+    "Write: filename.json — what was written",
+    "Bash: command — what it did",
+    "Task: description — what agent explored"
+  ]
+}
+```
+
+This log is the source of truth for Part B review. It survives context compaction.
 
 ## State File Location
 
@@ -123,6 +163,6 @@ Re-center on protocol. Invoke at session start, every 10 actions, or when contex
 
 This command combines:
 - **Protocol refresh** (Part A)
-- **Work quality check** (Part B - from old validate)
+- **Work quality check** (Part B)
 
 One command, one counter, one mechanism.

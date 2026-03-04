@@ -1,6 +1,6 @@
-# Step 9: Wrap Commands
+# Step 8: Wrap Commands
 
-Discovered commands (from Step 7) must run within the kernel loop for self-improvement and anchor-on-drift.
+Discovered commands (from Step 6) must run within the kernel loop for self-improvement and anchor-on-drift.
 
 ## Process
 
@@ -41,9 +41,7 @@ Each wrapped command follows this pattern:
 
 | Original | Wrapped |
 |----------|---------|
-| `/qa-workflow` | Anchor → Execute from protocol → Complete |
-| `/qa-workflow-dev` | Anchor → Execute from protocol → Complete |
-| `/run-test` | Anchor → Execute from protocol → Complete |
+| `/[command]` | Anchor → Execute from protocol → Complete |
 
 ## Rules
 

@@ -13,24 +13,77 @@ The hook exists for a reason. Follow it. Every time. No exceptions.
 
 ## CRITICAL: First Action Rule
 
-When user gives ANY input (task, "continue", "domain setup", anything):
+When user gives any task or says "continue":
 1. **IMMEDIATELY** invoke `/kernel/session-start`
 2. Do NOT read files first
 3. Do NOT explore the codebase first
 4. Do NOT run any commands first
-5. After session-start completes, it auto-proceeds (no asking)
 
-**First action = /kernel/session-start. Always. No exceptions.**
+**First action = /kernel/session-start. Always.**
 
 ## The Loop
 
 ```
-session-start → anchor → WORK → complete
-                   ↑         ↓
-                   └─ every 10 actions
+session-start → anchor → WORK ─────────────────→ complete
+                   ↑         ↓                       ↑
+                   └─ every 10 actions ←─────────────┘
                              ↓
                    failure? → fix → learn (MANDATORY)
 ```
+
+### Cycling Mode
+
+When cycling through tasks (autonomous task execution):
+
+```
+/kernel/autonomous-cycle → pick task → WORK → /kernel/complete → next task
+                                                    ↑                  │
+                                                    └──────────────────┘
+                                                    (until all tasks done or skipped)
+```
+
+**Entry point:** `/kernel/autonomous-cycle` (user-invoked, never automatic).
+
+See: `.claude/skills/autonomous-cycling/` for cycling behavior spec.
+
+### Work Loop Details
+
+```
+WORK:
+  1. Write/Edit/Bash (any action)
+  2. Hook AUTO-INCREMENTS counter (you don't need to)
+  3. Every 10 actions → hook blocks → /kernel/anchor
+  4. Run tests
+  5. If test fails → fix → /kernel/learn
+  6. Repeat until done
+  7. /kernel/complete
+```
+
+**Auto Counter:** Hook automatically tracks Write, Edit, AND Bash. Blocks at 10 actions (configurable via `actions_limit`). You do NOT need to increment manually.
+
+### Learn Triggers (Enforced by Hook)
+
+You MUST invoke `/kernel/learn` after:
+- **Test failure** — Bash test command returned non-zero exit (PostToolUse hook sets `needs_learn: true`)
+- **Anchor violation** — `/kernel/anchor` Part B found protocol violation
+
+Hook will BLOCK your next write until you invoke `/kernel/learn`.
+
+### Learn Self-Enforcement (Protocol Rule)
+
+The hook is a SAFETY NET, not the only trigger. If a test fails (non-zero exit code),
+you MUST invoke `/kernel/learn` after fixing — even if `needs_learn` is not set in state.
+
+Self-enforce: test failed → fix → /kernel/learn. Always. Hook or no hook.
+
+### Restart Requirement
+
+After `/kernel/domain-setup` creates new hooks:
+1. Hooks load at Claude Code startup
+2. New hooks are NOT active until restart
+3. Agent sets `needs_restart: true` and stops
+4. User restarts Claude Code, says "continue"
+5. Agent resumes from `/kernel/anchor`
 
 ## Architecture: 5-Layer QA Framework (TypeScript/Playwright)
 
@@ -65,12 +118,13 @@ Before generating any layer code, read:
 
 ```
 .claude/commands/kernel/
-├── session-start.md   ← Check state, resume
-├── domain-setup.md    ← Create protocol + hooks (invokes skill)
-├── anchor.md          ← Re-read protocol + check work
-├── learn.md           ← Update protocol + hooks (after fix)
-├── fix.md             ← Impact assessment before any fix
-└── complete.md        ← Final gate (before done)
+├── session-start.md       ← Check state, resume (domain persistence rule)
+├── domain-setup.md        ← Create protocol + hooks (ONLY if no domain exists)
+├── anchor.md              ← Re-read protocol + check work (Part A + Part B)
+├── learn.md               ← Update protocol + hooks (after fix) - CLEARS BLOCK
+├── fix.md                 ← Impact assessment before any fix (MANDATORY)
+├── complete.md            ← Final gate (before done) + cycling continuation
+└── autonomous-cycle.md    ← Start cycling through tasks (user-invoked)
 ```
 
 ### QA Commands
@@ -87,7 +141,55 @@ Before generating any layer code, read:
 └── pr.md                   ← Code review against architecture rules
 ```
 
-## QA Workflow
+## Smart Gates
+
+Hook blocks writes if state is missing. Tells you how to fix:
+
+```
+BLOCKED: Lesson not recorded (trigger: test_failure)
+
+FIX:
+1. Invoke /kernel/learn
+2. Record what you learned from the fix
+3. Then retry your write
+
+Command: /kernel/learn
+```
+
+## Skills
+
+### Domain Setup Skill
+
+Location: `.claude/skills/kernel-domain-setup/`
+
+The `/kernel/domain-setup` command uses a modular skill-based approach:
+
+| Step | Action | Reference |
+|------|--------|-----------|
+| 1 | Verify prerequisites | `references/step-01-prerequisites.md` |
+| 2 | Discover repo structure | `references/step-02-discover.md` |
+| 3 | Read reference code | `references/step-03-read.md` |
+| 4 | Extract patterns | `references/step-04-extract.md` |
+| 5 | Understand enforcement | `references/step-05-enforcement.md` |
+| 6 | Read workflow | `references/step-06-workflow.md` |
+| 7 | Build roadmap | `references/step-07-roadmap.md` |
+| 8 | Build protocol | `references/step-08-protocol.md` |
+| 9 | Wrap commands | `references/step-09-commands.md` |
+| 10 | Update state | `references/step-10-state.md` |
+| 11 | Report & restart | `references/step-11-report.md` |
+
+### Autonomous Cycling Skill
+
+Location: `.claude/skills/autonomous-cycling/`
+
+Domain spec that teaches the agent to loop through numbered tasks autonomously. Drop this in as a domain spec or reference it from your protocol.
+
+| File | Purpose |
+|------|---------|
+| `SKILL.md` | Identity, philosophy, file index |
+| `workflow.md` | Loop behavior, state tracking, verification, error handling |
+
+### QA Workflow
 
 ```
 .claude/skills/qa-management-layer/
@@ -108,24 +210,11 @@ Before generating any layer code, read:
     └── propose-fix.md       ← Fix approval protocol
 ```
 
-## Domain Setup
-
-```
-.claude/skills/kernel-domain-setup/
-├── SKILL.md               ← 11-step setup overview
-└── references/             ← Step-by-step guides
-    ├── step-01-prerequisites.md
-    ├── step-02-verify-claude-md.md
-    ├── step-03-discover.md
-    ├── step-04-read.md
-    ├── step-05-extract.md
-    ├── step-06-enforcement.md
-    ├── step-07-workflow.md
-    ├── step-08-protocol.md
-    ├── step-09-commands.md
-    ├── step-10-state.md
-    └── step-11-report.md
-```
+**Key Principles:**
+- Protocol = Index (point to files, don't duplicate)
+- 200-line threshold (extract to sub-files when sections grow)
+- Two-tier enforcement: Hooks (hard) + Protocol (soft)
+- Resume support via `resume_step` in session_state.json
 
 ## Principles
 
