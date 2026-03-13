@@ -1,3 +1,10 @@
+---
+step: 5
+title: Execution and HITL
+gate: validate-execution
+next: null
+---
+
 # Step 5: Test Execution & HITL Iteration
 
 **Purpose:** Execute test, validate results with HITL triage for failures.

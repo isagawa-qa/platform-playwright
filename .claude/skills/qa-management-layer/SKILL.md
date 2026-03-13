@@ -41,10 +41,10 @@ Use when:
 ## Workflow Overview
 
 ```
-  Step 1: User Input           ──► persona, URL, role_name, workflow
+  Step 1: User Input           ──► persona, URL, role_name, workflow, test_type
       │
       ▼
-  Step 2: Pre-flight Config    ──► credential_strategy, test_data_location
+  Step 2: Pre-flight Config    ──► credential_strategy, api_auth_strategy, test_data_location
       │
       ▼
   Step 3: AI Processing        ──► bdd_scenarios, expected_states, intent
@@ -52,12 +52,15 @@ Use when:
       ▼
   Step 4: Collaborative Construction
       │
-      ├─► Playwright MCP element discovery (accessibility tree + selectors)
+      ├─► test_type?
+      │     ├─ UI:     Playwright MCP element discovery → POMs
+      │     ├─ API:    Endpoint discovery → Api Objects
+      │     └─ Hybrid: Both discovery paths
       │
-      ├─► AI builds POMs manually (Edit/Write tools)
-      ├─► AI builds Tasks manually (Edit/Write tools)
-      ├─► AI builds Roles manually (Edit/Write tools)
-      ├─► AI builds Tests manually (Edit/Write tools)
+      ├─► AI builds POMs and/or Api Objects (Edit/Write tools)
+      ├─► AI builds Tasks (Edit/Write tools)
+      ├─► AI builds Roles (Edit/Write tools)
+      ├─► AI builds Tests (Edit/Write tools)
       │
       └─► Gates validate each piece (framework compliance)
       │
@@ -116,11 +119,9 @@ Use when:
 ## 5-Layer Architecture (TypeScript/Playwright)
 
 ```
-Test (Playwright Test — arrange / act / assert)
-  └→ Role (multi-task workflow, user persona)
-       └→ Task (single domain operation)
-            └→ Page Object (one page, atomic actions, fluent API)
-                 └→ BrowserInterface (Playwright wrapper, waits, logging)
+UI Path:   Test → Role → Task → Page Object → BrowserInterface → Browser
+API Path:  Test → Role → Task → Api Object  → ApiClient        → HTTP
+Hybrid:    Test → Role → Task → POM + Api Object → BI + ApiClient
 ```
 
 ### Layer Rules
@@ -128,17 +129,20 @@ Test (Playwright Test — arrange / act / assert)
 | Layer | Decorator | Return Value | Composes | Fluent API |
 |-------|-----------|--------------|----------|------------|
 | **Page Object** | None | `this` | BrowserInterface | Yes |
-| **Task** | `@autologger('Task')` | void | Page Objects | No (uses POM fluent API) |
+| **Api Object** | None | `this` | ApiClient | Yes |
+| **Task** | `@autologger('Task')` | void | POMs, Api Objects, or both | No (uses fluent API) |
 | **Role** | `@autologger('Role')` | void | Tasks | No |
-| **Test** | None (Playwright test()) | N/A | Roles + POMs (assert) | No |
+| **Test** | None (Playwright test()) | N/A | Roles + POMs/Api Objects (assert) | No |
 
 ### Critical Rules
 
-- **Tasks return void** — Tests assert via POM state-check methods
-- **Roles return void** — Tests assert via POM state-check methods
+- **Tasks return void** — Tests assert via POM/Api Object state-check methods
+- **Roles return void** — Tests assert via POM/Api Object state-check methods
 - **Page Objects return this** — Enables fluent chaining for Tasks
-- **State-check methods return boolean/string** — For test assertions
+- **Api Objects return this** — Enables fluent chaining for Tasks
+- **State-check methods return boolean/string/number** — For test assertions
 - **Locators ONLY in Page Objects** — Static readonly class constants
+- **Endpoint paths ONLY in Api Objects** — Static readonly constants/methods
 - **Composition over inheritance** — No base classes
 
 ---
@@ -165,9 +169,10 @@ When AI generates skeleton or incomplete code, it must self-heal:
 | Layer | Must Have | Must NOT Have |
 |-------|-----------|---------------|
 | **POM** | Static locators, atomic methods (return this), state methods | Task/Role imports, workflow logic |
-| **Task** | @autologger, POM composition, void return | Locator strings, return values |
-| **Role** | @autologger, Task composition, void return | POM imports, direct POM calls |
-| **Test** | test(), expect(), Role calls, POM assertions | Task calls, POM action calls |
+| **Api Object** | Static endpoint paths, typed req/res, atomic methods (return this), state methods | Task/Role imports, fetch/axios calls |
+| **Task** | @autologger, POM/Api Object composition, void return | Locator strings, endpoint URLs, return values |
+| **Role** | @autologger, Task composition, void return | POM/Api Object imports, direct calls |
+| **Test** | test(), expect(), Role calls, POM/Api Object assertions | Task calls, direct action calls |
 
 ---
 
@@ -200,8 +205,9 @@ npx playwright test --trace on
 
 | Document | Purpose |
 |----------|---------|
-| `FRAMEWORK.md` | Full architecture reference |
-| `framework/_reference/` | Canonical TypeScript patterns |
+| `FRAMEWORK.md` | Full architecture reference (UI + API) |
+| `framework/_reference/` | Canonical TypeScript patterns (POMs, Api Objects, Tasks, Tests) |
+| `framework/interfaces/` | BrowserInterface (UI) + ApiClient (API) |
 | `CLAUDE.md` | Kernel instructions |
 
 ---

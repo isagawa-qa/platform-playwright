@@ -1,3 +1,9 @@
+---
+name: pre-construction
+trigger: before-step-4
+action: reuse-check-and-read-references
+---
+
 # Pre-Construction Checkpoint
 
 **Invoke:** Before writing ANY code in Step 4 (Construction Phase)
@@ -6,16 +12,17 @@
 
 ## MANDATORY: Complete Before Writing Code
 
-### 0. Reuse Check — MANDATORY SCAN (ALL THREE LAYERS)
+### 0. Reuse Check — MANDATORY SCAN (ALL LAYERS)
 
-**BLOCKING: Scan pages, tasks, AND roles. Show output. Check for duplicates.**
+**BLOCKING: Scan pages, apis, tasks, AND roles. Show output. Check for duplicates.**
 
 ```
-ACTION REQUIRED — SCAN ALL THREE DIRECTORIES:
+ACTION REQUIRED — SCAN ALL DIRECTORIES:
 
 1. Glob: framework/pages/**/*.ts
-2. Glob: framework/tasks/**/*.ts
-3. Glob: framework/roles/**/*.ts
+2. Glob: framework/apis/**/*.ts
+3. Glob: framework/tasks/**/*.ts
+4. Glob: framework/roles/**/*.ts
 
 SHOW all output. CHECK each layer for duplicates.
 ```
@@ -50,10 +57,11 @@ Which option?
 
 **Generic modules (consolidate to common/):**
 - Pages: LoginPage, LogoutPage, NavigationPage, HeaderPage, SearchPage
+- Api Objects: AuthApi, UsersApi (shared across workflows)
 - Tasks: AuthTasks, NavigationTasks (login/logout flows)
 - Roles: Shared authentication roles
 
-**Workflow-specific (keep separate):** GoalsPage, BookingPage, domain-unique modules
+**Workflow-specific (keep separate):** GoalsPage, BookingPage, domain-unique modules, workflow-specific Api Objects
 
 ---
 
@@ -80,20 +88,27 @@ Which option?
 You MUST read these files NOW (not from memory):
 
 ```
-framework/_reference/pages/*.ts    → POM patterns
-framework/_reference/tasks/*.ts    → Task patterns
+framework/_reference/pages/*.ts    → POM patterns (UI/hybrid)
+framework/_reference/apis/*.ts     → Api Object patterns (API/hybrid)
+framework/_reference/tasks/*.ts    → Task patterns (all types)
 framework/_reference/roles/*.ts    → Role patterns
-framework/_reference/tests/*.ts    → Test patterns
+framework/_reference/tests/*.ts    → Test patterns (UI + API)
 ```
 
-**Read each file. Extract patterns. Apply to your code.**
+**Read each file relevant to test_type. Extract patterns. Apply to your code.**
 
-### 3. Check BrowserInterface Methods
+### 3. Check Interface Methods
 
 Before writing ANY interaction logic:
 
+**For UI/hybrid tests:**
 1. **READ** `framework/interfaces/browser-interface.ts`
 2. **LIST** methods available (click, fill, waitForElementVisible, etc.)
+3. **USE** existing methods — do not create workarounds
+
+**For API/hybrid tests:**
+1. **READ** `framework/interfaces/api-client.ts`
+2. **LIST** methods available (get, post, put, patch, delete, setAuthToken, etc.)
 3. **USE** existing methods — do not create workarounds
 
 ### 4. Forbidden Patterns
@@ -120,9 +135,10 @@ try {
 | Layer | Returns | Contains |
 |-------|---------|----------|
 | POM | `this` | Locators, atomic methods (return this), state-check methods |
-| Task | `void` | Workflow orchestration, @autologger decorator |
+| Api Object | `this` | Endpoint constants, atomic methods (return this), state-check methods, typed request/response |
+| Task | `void` | Workflow orchestration, @autologger decorator, composes POMs and/or Api Objects |
 | Role | `void` | Multi-task workflows, @autologger decorator |
-| Test | N/A | Role workflow calls (no test-level orchestration), assertions via POM state methods |
+| Test | N/A | Role workflow calls, assertions via POM/Api Object state methods |
 
 ---
 
@@ -130,11 +146,12 @@ try {
 
 **You MUST confirm each item was DONE (not just understood):**
 
-- [ ] I SCANNED all 3 layers (Glob) and SHOWED output
+- [ ] I SCANNED all layers — pages, apis, tasks, roles (Glob) and SHOWED output
 - [ ] I CHECKED for duplicate filenames, PRESENTED HITL if found
 - [ ] I READ lessons.md and will APPLY all lessons to my code
-- [ ] I READ reference files (not from memory)
-- [ ] I CHECKED BrowserInterface methods
+- [ ] I READ reference files relevant to test_type (not from memory)
+- [ ] I CHECKED BrowserInterface methods (UI/hybrid)
+- [ ] I CHECKED ApiClient methods (API/hybrid)
 
 **If you skipped lessons.md, GO BACK AND READ IT.**
 

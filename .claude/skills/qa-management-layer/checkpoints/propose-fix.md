@@ -1,3 +1,9 @@
+---
+name: propose-fix
+trigger: user-selects-ai-fix
+action: show-fix-and-wait-approval
+---
+
 # Propose-Fix Checkpoint
 
 **Invoke:** Before applying ANY fix (when user selected "AI Proposes Fix")

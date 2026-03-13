@@ -1,3 +1,9 @@
+---
+name: qa-gate-contract
+type: validation
+hitl: mandatory
+---
+
 # Gate Contract
 
 **Purpose:** Define what an agent builds for each step's gate. Gates are executable — they run within the protocol, validate, teach, and enable learning.
@@ -65,52 +71,62 @@ When agent loops autonomously, it's not pair programming — it's solo coding.
 
 ---
 
-## BrowserInterface Methods First (MANDATORY)
+## Interface Methods First (MANDATORY)
+
+### BrowserInterface (UI / Hybrid)
 
 **Before writing ANY interaction logic in POM:**
 
 ```
 1. CHECK: Does BrowserInterface already have this method?
-   - waitForElementVisible()
-   - waitForElementClickable()
-   - waitForUrlContains()
-   - click()
-   - fill()
-   - isElementVisible()
-   - etc.
+   - waitForElementVisible(), click(), fill(), isElementVisible(), etc.
 
 2. IF YES: Use it directly
    - await this.browser.waitForElementVisible(LoginPage.LOCATOR)
-   - NOT: custom polling loops
 
 3. IF NO: STOP and ask user:
-   "Need BrowserInterface method: [description]
+   "Need BrowserInterface method: [description]. Should I add this to BrowserInterface?"
 
-   Example: waitForNewTab(timeout)
+4. WAIT for user approval before creating workaround code
+```
 
-   Should I add this to BrowserInterface?"
+### ApiClient (API / Hybrid)
 
-4. WAIT for user approval before:
-   - Creating workaround code
-   - Using page.waitForTimeout()
-   - Writing manual polling loops
+**Before writing ANY HTTP logic in Api Objects:**
+
+```
+1. CHECK: Does ApiClient already have this method?
+   - get(), post(), put(), patch(), delete(), setAuthToken(), assertStatus(), etc.
+
+2. IF YES: Use it directly
+   - await this.api.post<UserResponse>(UsersApi.BASE_PATH, { data })
+
+3. IF NO: STOP and ask user:
+   "Need ApiClient method: [description]. Should I add this to ApiClient?"
+
+4. WAIT for user approval before creating workaround code
 ```
 
 ### Forbidden Patterns:
 
 ```typescript
-// NEVER do this in POM:
-await page.waitForTimeout(500); // NO — use BrowserInterface wait methods
+// NEVER in POM:
+await page.waitForTimeout(500);              // Use BrowserInterface wait methods
 
-// CORRECT — use existing BI method or ask for new one:
+// NEVER in Api Objects:
+const response = await fetch('/api/users');   // Use ApiClient methods
+await this.request.get('/api/users');          // Use ApiClient methods
+
+// CORRECT:
 await this.browser.waitForElementVisible(LoginPage.SUBMIT_BUTTON);
+await this.api.get<UserResponse>(UsersApi.BASE_PATH);
 ```
 
 ### Why This Matters:
 
-- BrowserInterface is the single source of browser interaction patterns
+- BrowserInterface and ApiClient are the single sources of interaction patterns
 - Custom workarounds create inconsistency and technical debt
-- If BI is missing a method, adding it benefits ALL future tests
+- If an interface is missing a method, adding it benefits ALL future tests
 
 ---
 

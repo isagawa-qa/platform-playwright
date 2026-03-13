@@ -1,19 +1,23 @@
 /**
- * Playwright test fixtures - wires BrowserInterface into test lifecycle.
+ * Playwright test fixtures - wires BrowserInterface and ApiClient into test lifecycle.
  *
  * Equivalent to Python conftest.py:
- * - browser fixture wrapping BrowserInterface
+ * - browser_interface fixture wrapping BrowserInterface (UI tests)
+ * - api_client fixture wrapping ApiClient (API tests)
+ * - Both available for hybrid tests
  * - config fixture from .env
  * - test data fixtures
  */
 
 import { test as base } from '@playwright/test';
 import { BrowserInterface, BrowserConfig } from '../../framework/interfaces/browser-interface';
+import { ApiClient, ApiConfig } from '../../framework/interfaces/api-client';
 import { Logger } from '../../framework/utilities/logger';
 import { DataGenerator } from '../../framework/utilities/data-generator';
 
 type Fixtures = {
   browser_interface: BrowserInterface;
+  api_client: ApiClient;
   dataGenerator: DataGenerator;
 };
 
@@ -30,6 +34,29 @@ export const test = base.extend<Fixtures>({
     const browserInterface = new BrowserInterface(page, config, logger);
 
     await use(browserInterface);
+  },
+
+  api_client: async ({ playwright }, use) => {
+    const config: ApiConfig = {
+      baseURL: process.env.API_BASE_URL || process.env.BASE_URL || 'https://www.saucedemo.com',
+      defaultTimeout: 30000,
+      defaultHeaders: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    };
+
+    const requestContext = await playwright.request.newContext({
+      baseURL: config.baseURL,
+      extraHTTPHeaders: config.defaultHeaders,
+    });
+
+    const logger = new Logger('ApiClient');
+    const apiClient = new ApiClient(requestContext, config, logger);
+
+    await use(apiClient);
+
+    await requestContext.dispose();
   },
 
   dataGenerator: async ({}, use) => {

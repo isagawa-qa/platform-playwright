@@ -1,3 +1,10 @@
+---
+step: 4
+title: Multi-Page Discovery
+gate: validate-multipage
+next: step-05
+---
+
 # Step 4 Extended: Multi-Page Workflow Guide
 
 **Purpose:** Guide construction when a workflow spans multiple pages (e.g., login → inventory → cart → checkout).

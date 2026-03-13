@@ -1,3 +1,9 @@
+---
+name: qa-workflow
+step_count: 5
+state_file: tests/_state/workflow_state.json
+---
+
 # QA Workflow (5-Step)
 
 **Purpose:** Index of the 5-step QA workflow. Agent reads this to understand data flow and validation criteria.
@@ -7,16 +13,16 @@
 ## Workflow Overview
 
 ```
-Step 1: User Input ──► persona, URL, workflow
+Step 1: User Input ──► persona, URL, workflow, test_type
     │
     ▼ (validate, teach, save state)
-Step 2: Pre-flight ──► credential_strategy (browser always running)
+Step 2: Pre-flight ──► credential_strategy, api_auth_strategy
     │
     ▼ (validate, teach, save state)
 Step 3: AI Processing ──► bdd_scenarios, expected_states, intent
     │
     ▼ (validate, teach, save state)
-Step 4: Construction ──► discovered_elements, POM, Task, Role, Test files
+Step 4: Construction ──► discovered_elements/endpoints, POM/Api Object, Task, Role, Test
     │
     ▼ (validate, teach, save state)
 Step 5: Execution ──► test_result, HITL triage if failed
@@ -31,10 +37,10 @@ COMPLETE ──► lessons stored via /kernel/learn
 
 | Step | Purpose | Input | Output | Reference |
 |------|---------|-------|--------|-----------|
-| 1 | User Input | User requirement | persona, URL, workflow, role_name | `steps/step-01.md` |
-| 2 | Pre-flight | Step 1 state | credential_strategy | `steps/step-02.md` |
+| 1 | User Input | User requirement | persona, URL, workflow, role_name, test_type | `steps/step-01.md` |
+| 2 | Pre-flight | Step 1 state | credential_strategy, api_auth_strategy | `steps/step-02.md` |
 | 3 | AI Processing | Steps 1-2 state | bdd_scenarios, expected_states, intent | `steps/step-03.md` |
-| 4 | Construction | Steps 1-3 state + Playwright | elements, POM, Task, Role, Test | `steps/step-04.md` |
+| 4 | Construction | Steps 1-3 state + Playwright | elements/endpoints, POM/Api Object, Task, Role, Test | `steps/step-04.md` |
 | 5 | Execution | Step 4 files | test_result, triage_decision | `steps/step-05.md` |
 
 ---
@@ -44,12 +50,12 @@ COMPLETE ──► lessons stored via /kernel/learn
 ```
 USER INPUT
     │
-    └──► { persona, URL, workflow, role_name, raw_requirement }
-              │
+    └──► { persona, URL, workflow, role_name, test_type, raw_requirement }
+              │              (optional: api_base_url, endpoints[])
               ▼
          PRE-FLIGHT
               │
-              └──► { credential_strategy }
+              └──► { credential_strategy, api_auth_strategy }
                         │
                         ▼
                    AI PROCESSING
@@ -59,7 +65,8 @@ USER INPUT
                                   ▼
                              CONSTRUCTION
                                   │
-                                  └──► { discovered_elements, files_created[] }
+                                  └──► { discovered_elements, discovered_endpoints,
+                                         files_created[], apis_created[] }
                                             │
                                             ▼
                                        EXECUTION
@@ -90,14 +97,16 @@ Agent self-enforces validation at each step:
 Before writing ANY code in Step 4:
 
 ```
-1. READ reference files:
-   - framework/_reference/pages/*.ts
-   - framework/_reference/tasks/*.ts
-   - framework/_reference/roles/*.ts
-   - framework/_reference/tests/*.ts
+1. READ reference files (based on test_type):
+   - framework/_reference/pages/*.ts       (UI/hybrid)
+   - framework/_reference/apis/*.ts        (API/hybrid)
+   - framework/_reference/tasks/*.ts       (all)
+   - framework/_reference/roles/*.ts       (all)
+   - framework/_reference/tests/*.ts       (all)
 
-2. READ BrowserInterface:
-   - framework/interfaces/browser-interface.ts
+2. READ interfaces:
+   - framework/interfaces/browser-interface.ts  (UI/hybrid)
+   - framework/interfaces/api-client.ts         (API/hybrid)
    - Use existing methods, ask before creating new ones
 
 3. ONLY THEN write code following reference patterns

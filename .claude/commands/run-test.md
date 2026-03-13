@@ -22,7 +22,7 @@ Execute tests following the testing skill protocol.
 
 ## Instructions
 
-**FIRST: Read protocol from `.claude/protocols/qa-protocol.md`**
+**FIRST: Read the domain protocol from `.claude/protocols/` (created by domain-setup)**
 
 The testing skill defines:
 - Visual feedback requirements

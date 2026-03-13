@@ -1,3 +1,9 @@
+---
+name: on-failure
+trigger: test-failure
+action: stop-and-report
+---
+
 # On-Failure Checkpoint
 
 **Invoke:** When ANY test failure, error, or unexpected behavior occurs

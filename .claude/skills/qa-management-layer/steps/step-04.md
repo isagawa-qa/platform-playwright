@@ -1,3 +1,10 @@
+---
+step: 4
+title: Discovery and Construction
+gate: validate-construction
+next: step-05
+---
+
 # Step 4: Element Discovery + Collaborative Construction
 
 **Purpose:** Discover interactive elements on target page, then build all 5 layers.
@@ -11,11 +18,50 @@
 | **Step** | 4 - Element Discovery + Construction |
 | **Dependencies** | Step 3 complete (bdd_scenarios, expected_states, intent) |
 | **Input** | URL from Step 1, credential_strategy from Step 2, metadata from Step 3 |
-| **Output** | Complete test code: POMs, Tasks, Roles, Tests |
+| **Output** | Complete test code: POMs and/or Api Objects, Tasks, Roles, Tests |
 
 ---
 
-## Element Discovery (Playwright MCP)
+## Discovery Phase
+
+Discovery depends on `test_type` from Step 1:
+
+| Test Type | Discovery Method |
+|-----------|-----------------|
+| **UI** | Element discovery via Playwright MCP (existing flow) |
+| **API** | Endpoint discovery from user input or OpenAPI spec |
+| **Hybrid** | Both element discovery AND endpoint discovery |
+
+---
+
+## Endpoint Discovery (API and Hybrid)
+
+For API and hybrid tests, discover endpoints before construction:
+
+```
+ACTION:
+- READ endpoints from Step 1 state
+- For each endpoint:
+  - IDENTIFY HTTP method (GET, POST, PUT, PATCH, DELETE)
+  - IDENTIFY path parameters (e.g., {id})
+  - IDENTIFY request body shape (from user description or OpenAPI spec)
+  - IDENTIFY expected response shape
+- GROUP endpoints by resource (e.g., all /api/users/* → UsersApi)
+
+IF user provided an OpenAPI/Swagger spec path:
+  - READ the spec file
+  - EXTRACT endpoints, request/response schemas, auth requirements
+  - Use as authoritative source for Api Object construction
+
+IF no spec provided:
+  - Use endpoint list from Step 1
+  - ASK user for request/response shapes if unclear
+  - Do NOT guess API shapes — ask the user
+```
+
+---
+
+## Element Discovery (Playwright MCP) — UI and Hybrid
 
 **Method:** Use the Playwright MCP server for element discovery.
 
@@ -94,7 +140,9 @@ This ensures:
 - Reuse check (scan for duplicate modules across workflows)
 - Lessons learned are read and applied
 - Reference files are read (not from memory)
-- BrowserInterface methods are checked
+- BrowserInterface methods are checked (UI/hybrid)
+- ApiClient methods are checked (API/hybrid)
+- Reference Api Objects are read (API/hybrid)
 
 **Do not skip this checkpoint.**
 
@@ -114,6 +162,9 @@ After element discovery, AI builds each layer using Edit/Write tools:
 
 ### Build Order
 
+Build order depends on `test_type`:
+
+**UI tests:**
 ```
 1. Page Objects   → framework/pages/{workflow}/{page-name}-page.ts
 2. Tasks          → framework/tasks/{workflow}/{workflow}-tasks.ts
@@ -121,23 +172,44 @@ After element discovery, AI builds each layer using Edit/Write tools:
 4. Tests          → tests/{workflow}/test-{name}.spec.ts
 ```
 
+**API tests:**
+```
+1. Api Objects    → framework/apis/{workflow}/{resource-name}-api.ts
+2. Tasks          → framework/tasks/{workflow}/{workflow}-api-tasks.ts
+3. Roles          → framework/roles/{workflow}/{role-name}-role.ts
+4. Tests          → tests/{workflow}/test-{name}-api.spec.ts
+```
+
+**Hybrid tests:**
+```
+1. Page Objects   → framework/pages/{workflow}/{page-name}-page.ts
+2. Api Objects    → framework/apis/{workflow}/{resource-name}-api.ts
+3. Tasks          → framework/tasks/{workflow}/{workflow}-tasks.ts (compose both)
+4. Roles          → framework/roles/{workflow}/{role-name}-role.ts
+5. Tests          → tests/{workflow}/test-{name}.spec.ts
+```
+
 ### Layer Validation (must pass before proceeding)
 
 | Layer | Check |
 |-------|-------|
 | **POM** | Static locators, atomic methods return `this`, state-check methods |
-| **Task** | `@autologger('Task')`, POM composition, void return, no locators |
-| **Role** | `@autologger('Role')`, Task composition, void return, no locators |
-| **Test** | `test()`, `expect()`, Role workflow calls (no test-level orchestration), POM assertions |
+| **Api Object** | Static endpoint constants, atomic methods return `this`, state-check methods, typed request/response |
+| **Task** | `@autologger('Task')`, POM/Api Object composition, void return, no locators/URLs |
+| **Role** | `@autologger('Role')`, Task composition, void return, no locators/URLs |
+| **Test** | `test()`, `expect()`, Role workflow calls, POM/Api Object assertions |
 
 ### Reference Files (AI MUST read before generating)
 
-| Layer | Read First |
-|-------|------------|
-| POM | `framework/_reference/pages/login-page.ts` |
-| Task | `framework/_reference/tasks/reference-tasks.ts` |
-| Role | `framework/_reference/roles/reference-role.ts` |
-| Test | `framework/_reference/tests/test-reference-workflow.spec.ts` |
+| Layer | Read First | When |
+|-------|------------|------|
+| POM | `framework/_reference/pages/login-page.ts` | UI, Hybrid |
+| Api Object | `framework/_reference/apis/users-api.ts` | API, Hybrid |
+| Task (UI) | `framework/_reference/tasks/reference-tasks.ts` | UI |
+| Task (API/Hybrid) | `framework/_reference/tasks/reference-api-tasks.ts` | API, Hybrid |
+| Role | `framework/_reference/roles/reference-role.ts` | All |
+| Test (UI) | `framework/_reference/tests/test-reference-workflow.spec.ts` | UI |
+| Test (API/Hybrid) | `framework/_reference/tests/test-reference-api-workflow.spec.ts` | API, Hybrid |
 
 ---
 
@@ -168,7 +240,40 @@ export class LoginPage {
 }
 ```
 
-### Task Pattern
+### Api Object Pattern (API and Hybrid)
+
+```typescript
+import { ApiClient, ApiResponseData } from '../../interfaces/api-client';
+
+interface CreateUserRequest { name: string; email: string; }
+interface UserResponse { id: number; name: string; email: string; }
+
+export class UsersApi {
+  private lastResponse: ApiResponseData | null = null;
+
+  constructor(private readonly api: ApiClient) {}
+
+  static readonly BASE_PATH = '/api/users';
+  static readonly SINGLE_PATH = (id: number) => `/api/users/${id}`;
+
+  async create(data: CreateUserRequest): Promise<UsersApi> {
+    this.lastResponse = await this.api.post<UserResponse>(UsersApi.BASE_PATH, { data });
+    return this;
+  }
+
+  getLastStatus(): number {
+    if (!this.lastResponse) throw new Error('No API call has been made yet');
+    return this.lastResponse.status;
+  }
+
+  getLastBody<T = unknown>(): T {
+    if (!this.lastResponse) throw new Error('No API call has been made yet');
+    return this.lastResponse.body as T;
+  }
+}
+```
+
+### Task Pattern (UI)
 
 ```typescript
 import { BrowserInterface } from '../../interfaces/browser-interface';
@@ -188,6 +293,28 @@ export class LoginTasks {
       .enterUsername(username);
     await this.loginPage.enterPassword(password);
     await this.loginPage.clickLogin();
+    // NO return
+  }
+}
+```
+
+### Task Pattern (API)
+
+```typescript
+import { ApiClient } from '../../interfaces/api-client';
+import { autologger } from '../../utilities/autologger';
+import { UsersApi } from '../apis/users-api';
+
+export class UserApiTasks {
+  private readonly usersApi: UsersApi;
+
+  constructor(api: ApiClient) {
+    this.usersApi = new UsersApi(api);
+  }
+
+  @autologger('Task')
+  async createUser(name: string, email: string): Promise<void> {
+    await this.usersApi.create({ name, email });
     // NO return
   }
 }
@@ -215,7 +342,7 @@ export class StandardUserRole {
 }
 ```
 
-### Test Pattern
+### Test Pattern (UI)
 
 ```typescript
 import { test, expect } from '../../fixtures';
@@ -228,11 +355,32 @@ test.describe('Standard User Login', () => {
     const user = new StandardUserRole(browser_interface);
     const loginPage = new LoginPage(browser_interface);
 
-    // Act - Role workflow call(s)
+    // Act
     await user.loginAndBrowse('standard_user', 'secret_sauce');
 
     // Assert - Via POM state-check methods
     expect(await loginPage.isLoggedIn()).toBe(true);
+  });
+});
+```
+
+### Test Pattern (API)
+
+```typescript
+import { test, expect } from '../../fixtures';
+import { UsersApi } from '../../../framework/apis/users/users-api';
+
+test.describe('User API', () => {
+  test('create a new user', async ({ api_client }) => {
+    // Arrange
+    const usersApi = new UsersApi(api_client);
+
+    // Act
+    await usersApi.create({ name: 'John', email: 'john@test.com' });
+
+    // Assert - Via Api Object state-check methods
+    expect(usersApi.getLastStatus()).toBe(201);
+    expect(usersApi.isLastStatusOk()).toBe(true);
   });
 });
 ```
@@ -247,12 +395,19 @@ test.describe('Standard User Login', () => {
   "status": "complete",
   "data": {
     "pages_created": ["LoginPage", "InventoryPage"],
-    "tasks_created": ["AuthTasks"],
+    "apis_created": ["UsersApi"],
+    "tasks_created": ["AuthTasks", "UserApiTasks"],
     "roles_created": ["StandardUserRole"],
-    "tests_created": ["test-login.spec.ts"],
+    "tests_created": ["test-login.spec.ts", "test-users-api.spec.ts"],
     "discovered_elements": {
       "LoginPage": [
         {"name": "USERNAME_INPUT", "type": "textbox", "selector": "#user-name"}
+      ]
+    },
+    "discovered_endpoints": {
+      "UsersApi": [
+        {"method": "POST", "path": "/api/users", "request": "CreateUserRequest"},
+        {"method": "GET", "path": "/api/users/{id}", "response": "UserResponse"}
       ]
     }
   }
