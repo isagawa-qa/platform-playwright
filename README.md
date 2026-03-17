@@ -9,6 +9,231 @@ A production-grade TypeScript Playwright framework with **AI-powered test genera
 
 ---
 
+## Get Started (Step by Step)
+
+Follow each step in order. Do not skip any step. Everything is done inside VS Code.
+
+### Step 1: Install VS Code
+
+VS Code is the code editor where you will do all your work.
+
+1. Go to https://code.visualstudio.com/
+2. Click the big **Download** button
+3. Open the file you downloaded
+4. Follow the installer — click **Next** on each screen, then click **Install**
+5. When it finishes, open VS Code
+
+### Step 2: Install Git
+
+Git is a tool that downloads and tracks code. You need it to download this project.
+
+1. Go to https://git-scm.com/downloads
+2. Click the download for your operating system (Windows, Mac, or Linux)
+3. Open the file you downloaded
+4. Follow the installer — use the default options on every screen, click **Next**, then **Install**
+5. When it finishes, restart VS Code if it is already open
+
+**Check that Git is installed:**
+1. In VS Code, open the terminal: press ``Ctrl + ` `` (the backtick key, above the Tab key on your keyboard)
+2. Type this and press **Enter**:
+   ```bash
+   git --version
+   ```
+3. You should see something like: `git version 2.44.0`. If you see this, Git is installed.
+
+### Step 3: Install Node.js
+
+Node.js runs the test framework. You need it to install and run tests.
+
+1. Go to https://nodejs.org/
+2. Click the **LTS** download button (the one that says "Recommended")
+3. Open the file you downloaded
+4. Follow the installer — use the default options, click **Next**, then **Install**
+5. Restart VS Code after installing
+
+**Check that Node.js is installed:**
+1. In the VS Code terminal (``Ctrl + ` ``), type:
+   ```bash
+   node --version
+   ```
+2. You should see something like: `v20.11.0`. The number must be 18 or higher.
+
+### Step 4: Install Claude Code Extension
+
+Claude Code is the AI agent that builds tests for you inside VS Code.
+
+1. In VS Code, click the **Extensions** icon on the left sidebar (it looks like 4 small squares)
+2. In the search box, type: `Claude Code`
+3. Find **"Claude Code"** by Anthropic — click **Install**
+4. Wait for the install to finish
+5. You will see a **sparkle icon (✱)** appear in the top-right area of VS Code
+
+> **You need an Anthropic account.** If you do not have one, go to https://claude.ai and create an account first.
+
+### Step 5: Download This Project
+
+Do this inside VS Code. Do not use a separate terminal.
+
+1. In VS Code, open the terminal: press ``Ctrl + ` ``
+2. Go to your Desktop (so the project saves there):
+   ```bash
+   cd Desktop
+   ```
+3. Download the project:
+   ```bash
+   git clone https://github.com/isagawa-qa/platform-playwright.git
+   ```
+4. Wait for the download to finish
+
+### Step 6: Open the Project in VS Code
+
+This step is important. Claude Code needs to be inside the project folder to work correctly.
+
+1. In VS Code, click **File** → **Open Folder**
+2. Find and select the `platform-playwright` folder on your Desktop
+3. Click **Select Folder** (Windows) or **Open** (Mac)
+4. VS Code will reload with the project open
+5. You should see the project files on the left sidebar (folders like `framework/`, `tests/`, `.claude/`)
+
+### Step 7: Install Dependencies
+
+1. In VS Code, open the terminal: press ``Ctrl + ` ``
+2. Type this command and press **Enter**:
+   ```bash
+   npm install
+   ```
+3. Wait for it to finish (you will see the cursor return)
+4. Then type this command and press **Enter**:
+   ```bash
+   npx playwright install chromium
+   ```
+5. Wait for it to finish
+
+### Step 8: Verify Playwright MCP
+
+The AI agent uses Playwright MCP to open a browser and discover page elements.
+
+1. In Claude Code, type:
+   ```
+   /mcp
+   ```
+2. You should see **playwright** in the list of MCP servers
+3. If you do NOT see it, close VS Code and open it again, then check `/mcp` again
+
+### Step 9: Verify the Install
+
+In the VS Code terminal (``Ctrl + ` ``), type:
+```bash
+npx playwright test
+```
+
+You should see: **2 passed**. This means everything is installed correctly.
+
+If you see errors, go to the [Troubleshooting](#troubleshooting) section below.
+
+### Step 10: Create Your First Test
+
+1. In Claude Code (click the **sparkle icon ✱** if it is not open), type:
+   ```
+   /qa-workflow
+   ```
+2. Claude will ask what you want to test. Use this format for best results:
+
+   ```
+   Requirement: As a [role], I want to [action] so I can [goal]
+   URL: https://your-app.com/page1, https://your-app.com/page2
+   Workflows: workflow-name
+
+   ---
+   Steps:
+
+   Phase 1: [Description]
+   1. [Action] → [Expected result]
+   2. [Action] → [Expected result]
+   3. [Action] → [Expected result]
+
+   Phase 2: [Description]
+   4. [Action] → [Expected result]
+   5. [Action] → [Expected result]
+
+   Expected:
+   - [What should happen after Phase 1]
+   - [What should happen after Phase 2]
+
+   Credentials:
+   - Email: your-test-email@example.com
+   - Password: your-test-password
+   ```
+
+   **Example (real test):**
+
+   ```
+   Requirement: As an employee manager, I want to create an employee
+     and assign them a task so I can validate the workforce management flow
+   URL: https://myapp.com/employees, https://myapp.com/tasks
+   Workflows: employee-management and task-management
+
+   ---
+   Steps:
+
+   Phase 1: Create employee
+   1. Login with credentials → redirects to /dashboard
+   2. Click "Employees" in sidebar → opens /employees
+   3. Click "Add Employee" button → modal opens
+   4. Enter name: "Research Assistant"
+   5. Configure employee settings (role, capabilities)
+   6. Click "Create Employee" → modal closes
+
+   Phase 2: Assign task to employee
+   7. Click "Tasks" in sidebar → opens /tasks
+   8. Click "Add Task" button → modal opens
+   9. Enter title: "Research competitor pricing"
+   10. Enter description: "Analyze top 5 competitors"
+   11. Select assignee: "Research Assistant" from dropdown
+   12. Click "Create Task" → modal closes
+
+   Expected:
+   - Toast: "Employee created" after step 6
+   - "Research Assistant" appears in employees list
+   - Toast: "Task created" after step 12
+   - Task shows "Research Assistant" as assignee
+
+   Credentials:
+   - Email: testuser@example.com
+   - Password: testpassword123
+   ```
+
+3. Press **Enter** and wait. Claude will:
+   - Open a browser and navigate to your URL
+   - Find all the buttons, fields, and links on each page
+   - Write the test code automatically
+   - Save the files in the correct folders
+   - Run the test
+
+4. When it finishes, you will see the test result: **passed** or **failed**
+
+### Step 11: Review the Code Quality
+
+After Claude creates the test, run a code review to fix any pattern issues:
+
+1. In Claude Code, type:
+   ```
+   /pr
+   ```
+2. Claude will scan all generated files and check them against the framework's coding standards
+3. If everything is correct, you will see: **PR REVIEW: APPROVED**
+4. If there are issues, Claude will show you what is wrong and ask how you want to fix them. Choose **Option 1 (Fix all)** to let Claude fix the issues automatically.
+
+> **Always run `/pr` after creating tests.** This ensures your test code follows the correct architecture patterns.
+
+### Step 12: Create More Tests
+
+Repeat Steps 10-11 with different requirements for your application.
+
+> **Tip:** The more detail you put in your requirement (steps, expected results, URLs), the better the generated test will be. Vague requirements produce vague tests.
+
+---
+
 ## What You Get
 
 - **AI generates tests from requirements** — Describe a user story, get working test code
