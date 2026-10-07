@@ -3,7 +3,7 @@
 [![TypeScript 5.7+](https://img.shields.io/badge/TypeScript-5.7%2B-blue.svg)](https://www.typescriptlang.org/)
 [![Playwright 1.50+](https://img.shields.io/badge/Playwright-1.50%2B-green.svg)](https://playwright.dev/)
 
-Automated test generation and execution for web applications. An AI agent discovers page elements and API endpoints, generates structured test code across a 5-layer architecture, and runs UI, API, and hybrid tests. Describe what you want to test in plain English. The agent builds the rest.
+AI-driven test automation for web applications in TypeScript. Describe what you want to test in plain English, and an AI agent explores the application and its APIs, writes UI, API, and hybrid tests into one consistent framework, and runs them with Playwright. Every generated test is code your team owns and maintains.
 
 Built on the [Isagawa Kernel](https://github.com/isagawa-co/isagawa-kernel).
 
@@ -15,73 +15,23 @@ The result is a test suite that is expensive to maintain, unreliable to run, and
 
 ## The Solution
 
-The Playwright Platform replaces that with a structured, repeatable framework. An AI agent reads your requirement, discovers the target application via Playwright MCP, and generates test code across five layers with strict separation of concerns. The agent operates under kernel enforcement, which means it cannot skip layers, mix locators into test files, or drift from the architecture pattern.
-
-Three test paths (UI, API, hybrid) share the same architecture. Locators live in one place. Endpoints live in one place. Business logic lives in Tasks and Roles. Tests only assert.
+UI, API, and hybrid tests share one structure, so a suite stays consistent as it grows and a UI or API change is fixed in one place instead of dozens. The agent works under guardrails from the [Isagawa Kernel](https://github.com/isagawa-co/isagawa-kernel), so it follows your conventions instead of improvising.
 
 ## How It Works
 
-The generation pipeline runs in five steps:
+1. **Describe.** Give the agent a requirement in plain English: who the user is, what they do, and where.
+2. **Explore.** The agent opens the application in a live browser and calls its APIs and maps what the test needs.
+3. **Build.** It writes the test and its supporting code into one consistent structure, reusing what already exists instead of duplicating it.
+4. **Run.** Tests run with `npx playwright test` against the target application.
+5. **Triage.** On a failure, the agent separates an application defect from a test problem and proposes a fix for you to approve.
+6. **Learn.** What went wrong is recorded, so later tests avoid the same mistake.
 
-1. **Input.** Provide a requirement: user story, target URLs, and test steps.
-2. **Discovery.** The agent navigates to each URL via Playwright MCP and captures page elements and API endpoints.
-3. **Generation.** The agent produces Page Objects, Api Objects, Tasks, Roles, and Tests following the reference implementations.
-4. **Execution.** Tests run via `npx playwright test` against the target application.
-5. **Review.** The `/pr` command validates generated code against architecture patterns.
-
-```
-Requirement: "As a standard user, I want to login and add items to my cart"
-
-LoginPage       → enterUsername(), enterPassword(), clickLogin()
-InventoryPage   → addItemToCart(), getCartCount()
-CartPage        → verifyItemInCart()
-ReferenceTasks  → login(), addToCart()
-ReferenceRole   → loginAndPurchase()
-Test            → assert cart contains expected item
-```
-
-## Architecture
-
-Every generated file follows a 5-layer separation of concerns. Each layer has a single responsibility. The architecture supports three test paths: UI (browser), API (HTTP), and hybrid (both).
-
-| Layer | Responsibility | Reference |
-|-------|---------------|-----------|
-| BrowserInterface / ApiClient | Playwright Page and APIRequestContext wrappers | `framework/interfaces/` |
-| Page Object / Api Object | Locators or endpoint paths as static readonly, atomic methods, return this | `framework/_reference/pages/`, `apis/` |
-| Task | Single domain operation, composes POMs and/or ApiObjs, @autologger | `framework/_reference/tasks/` |
-| Role | User workflows, composes Tasks, @autologger | `framework/_reference/roles/` |
-| Test | Playwright test specs, AAA pattern, assert via state-check methods | `framework/_reference/tests/` |
+**Example:**
 
 ```
-UI Path:     Test > Role > Task > Page Object  > BrowserInterface > Browser
-API Path:    Test > Role > Task > Api Object   > ApiClient        > HTTP
-Hybrid:      Test > Role > Task > POM + ApiObj > BI + ApiClient
+Requirement: "As a standard user, I want to log in and add items to my cart"
+Result:      UI and API checks for login, add to cart, and cart contents, all passing
 ```
-
-Reference implementations ship in `framework/_reference/`:
-
-| Layer | File | Type |
-|-------|------|------|
-| Page Object | `pages/login-page.ts`, `inventory-page.ts`, `cart-page.ts`, `checkout-page.ts` | UI |
-| Api Object | `apis/users-api.ts` | API |
-| Task (UI) | `tasks/reference-tasks.ts` | UI |
-| Task (API) | `tasks/reference-api-tasks.ts` | API, Hybrid |
-| Role | `roles/reference-role.ts` | All |
-| Test (UI) | `tests/test-reference-workflow.spec.ts` | UI |
-| Test (API) | `tests/test-reference-api-workflow.spec.ts` | API, Hybrid |
-
-## Kernel Enforcement
-
-The Playwright Platform includes a domain spec that teaches the AI agent how to generate and validate test code. The Isagawa Kernel enforces these rules at runtime:
-
-- Locators exist only in Page Objects. The agent never puts selectors in Tasks, Roles, or Tests.
-- Endpoint paths exist only in Api Objects. The agent never hardcodes URLs in Tasks or Tests.
-- Tasks and Roles return void. They never return values.
-- Tests assert via state-check methods on Page Objects or Api Objects, not by inspecting raw DOM or response data.
-- No inheritance. Composition only, at every layer.
-- The agent reads reference implementations before generating any code. It cannot skip this step.
-
-The agent learns from failures and updates its approach permanently through the kernel's lesson system.
 
 ## Quick Start
 
@@ -142,63 +92,6 @@ npx playwright test
 ```
 
 Reference tests run against SauceDemo and confirm the framework is working. Two tests should pass.
-
-## Project Structure
-
-```
-platform-playwright/
-├── .claude/
-│   ├── commands/
-│   │   ├── kernel/                        # Kernel governance commands
-│   │   ├── qa-workflow.md                 # Test generation pipeline
-│   │   ├── qa-workflow-dev.md             # Dev-mode generation
-│   │   ├── pr.md                          # Architecture review
-│   │   ├── run-test.md                    # Test execution
-│   │   ├── qa-pre-construction.md         # Pre-build validation
-│   │   ├── qa-on-failure.md               # Failure analysis
-│   │   ├── qa-propose-fix.md              # Fix proposals
-│   │   └── qa-reuse-check.md              # Reuse detection
-│   ├── hooks/
-│   │   ├── universal-gate-enforcer.py     # Kernel gate enforcement
-│   │   └── test-failure-detector.py       # Test failure detection
-│   ├── skills/
-│   │   ├── kernel-domain-setup/           # Self-building kernel setup
-│   │   ├── qa-management-layer/           # 5-step QA workflow skill
-│   │   └── autonomous-cycling/            # Autonomous task cycling
-│   ├── lessons/                           # Learned patterns from failures
-│   └── settings.json
-├── framework/
-│   ├── _reference/                        # Canonical patterns (read-before-write)
-│   │   ├── pages/                         # POM references (LoginPage, InventoryPage, CartPage, CheckoutPage)
-│   │   ├── apis/                          # Api Object references (UsersApi)
-│   │   ├── tasks/                         # Task references (UI + API)
-│   │   ├── roles/                         # Role references (ReferenceRole)
-│   │   └── tests/                         # Test references (UI + API specs)
-│   ├── interfaces/
-│   │   ├── browser-interface.ts           # Playwright Page wrapper
-│   │   └── api-client.ts                  # Playwright APIRequestContext wrapper
-│   ├── utilities/
-│   │   ├── autologger.ts                  # Method logging decorator
-│   │   ├── logger.ts                      # Winston logger
-│   │   └── data-generator.ts              # Faker-based test data
-│   ├── pages/{workflow}/                  # Generated Page Objects
-│   ├── apis/{workflow}/                   # Generated Api Objects
-│   ├── tasks/{workflow}/                  # Generated Tasks
-│   └── roles/{workflow}/                  # Generated Roles
-├── tests/
-│   ├── fixtures/
-│   │   └── index.ts                       # Playwright fixtures (browser_interface, api_client)
-│   ├── data/
-│   │   └── test_users.json                # Test credentials
-│   └── {workflow}/                        # Generated test specs
-├── .mcp.json                              # Playwright MCP server config
-├── playwright.config.ts                   # Playwright configuration
-├── tsconfig.json                          # TypeScript configuration
-├── CLAUDE.md                              # Kernel bootstrap configuration
-├── FRAMEWORK.md                           # Full architecture reference
-├── package.json                           # Dependencies
-└── LICENSE                                # Proprietary evaluation license
-```
 
 ## Other Platforms
 
