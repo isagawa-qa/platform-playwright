@@ -1,6 +1,5 @@
 # Isagawa QA Platform (Playwright)
 
-[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 [![TypeScript 5.7+](https://img.shields.io/badge/TypeScript-5.7%2B-blue.svg)](https://www.typescriptlang.org/)
 [![Playwright 1.50+](https://img.shields.io/badge/Playwright-1.50%2B-green.svg)](https://playwright.dev/)
 
@@ -211,15 +210,11 @@ Playwright is one interface. The Isagawa Kernel supports any domain that can be 
 | QA Platform (Playwright) (this repo) | TypeScript | Browser + HTTP | Web UI, API, and hybrid workflows |
 | [SSH Compliance](https://github.com/isagawa-qa/platform-ssh) | Python | SSH | Linux image configuration |
 
-## Contact
+## Author
 
-For commercial licensing, pilot programs, or technical questions:
-
-**Email:** [alain@isagawa.co](mailto:alain@isagawa.co)
-**Web:** [isagawa.co](https://www.isagawa.co)
+Built by Alain Ignacio, QA lead and test automation architect.
+Portfolio: [alain-ignacio.github.io](https://alain-ignacio.github.io) · LinkedIn: [linkedin.com/in/alain-ignacio](https://www.linkedin.com/in/alain-ignacio)
 
 ## License
 
-Proprietary. Copyright (c) 2025 Isagawa. All rights reserved.
-
-This repository is source-available for evaluation purposes. Production use requires a commercial license. See [LICENSE](LICENSE) for terms.
+Proprietary. Copyright (c) 2025 Isagawa. All rights reserved. Source is available for evaluation only. See [LICENSE](LICENSE).
